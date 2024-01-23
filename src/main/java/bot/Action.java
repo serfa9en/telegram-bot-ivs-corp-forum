@@ -54,7 +54,8 @@ public class Action {
         userDB.addName(userId, update.message().text());
         setAction(userId, constant.USER_FLAGS_DEFAULT);
         bot.execute(new SendMessage(userId, getCardUser(userId)));
-        sendMenu(userId);
+        int messageId = update.message().messageId() + 1;
+        sendMenu(userId, messageId);
     }
 
     // Что делаем при дефолтной строки
@@ -80,23 +81,24 @@ public class Action {
     }
 
     // собираем меню из кнопок
-    public void sendMenu(String userId) {
+    public void sendMenu(String userId, int messageId) {
 
         InlineKeyboardButton[] inlineKeyboardButtons0 = new InlineKeyboardButton[1];
         inlineKeyboardButtons0[0] = new InlineKeyboardButton("Программа мероприятия");
-        inlineKeyboardButtons0[0].callbackData(userId + " " + "messageId" + " " + "schedule.data[0]");
+        inlineKeyboardButtons0[0].callbackData(userId + "/" + messageId + "/" + constant.MENU_PROGRAM);
+        inlineKeyboardButtons0[0].url("https://telegra.ph/Mezhregionalnyj-cifrovoj-forum-Obmen-opytom-vnedreniya-i-ehkspluatacii-Rossijskih-produktov-01-23");
 
         InlineKeyboardButton[] inlineKeyboardButtons1 = new InlineKeyboardButton[1];
         inlineKeyboardButtons1[0] = new InlineKeyboardButton("Досье спикеров");
-        inlineKeyboardButtons1[0].callbackData(userId + " " + "messageId" + " " + "schedule.data[2]");
+        inlineKeyboardButtons1[0].callbackData(userId + "/" + messageId + "/" + constant.MENU_SPEAKERS);
 
         InlineKeyboardButton[] inlineKeyboardButtons2 = new InlineKeyboardButton[1];
         inlineKeyboardButtons2[0] = new InlineKeyboardButton("Задать вопрос");
-        inlineKeyboardButtons2[0].callbackData(userId + " " + "messageId" + " " + "schedule.data[4]");
+        inlineKeyboardButtons2[0].callbackData(userId + "/" + messageId + "/" + constant.MENU_QUEST);
 
         InlineKeyboardButton[] inlineKeyboardButtons3 = new InlineKeyboardButton[1];
         inlineKeyboardButtons3[0] = new InlineKeyboardButton("Записаться на круглый стол");
-        inlineKeyboardButtons3[0].callbackData(userId + " " + "messageId" + " " + "schedule.data[6]");
+        inlineKeyboardButtons3[0].callbackData(userId + "/" + messageId + "/" + constant.MENU_TABLE);
 
         InlineKeyboardMarkup inlineKeyboard = new InlineKeyboardMarkup(
                 inlineKeyboardButtons0,

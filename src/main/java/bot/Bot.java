@@ -2,11 +2,17 @@ package bot;
 
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.UpdatesListener;
+import com.pengrad.telegrambot.model.CallbackQuery;
+import com.pengrad.telegrambot.model.File;
 import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.BaseRequest;
 import com.pengrad.telegrambot.request.SendMessage;
+import com.pengrad.telegrambot.request.SetWebhook;
 import constant.Constant;
+
+import java.io.IOException;
+
 
 public class Bot {
 
@@ -27,7 +33,9 @@ public class Bot {
 
     private void process(Update update) {
         Message message = update.message();
+        CallbackQuery callbackQuery = update.callbackQuery();
         action.setUpdate(update);
+
 
         String text;
         BaseRequest request = null;
@@ -65,13 +73,18 @@ public class Bot {
 
                     case "/menu":
                     case "/menu@itforum_2024_bot": {
+                        bot.execute(new SendMessage(userId, "j"));
+
+                        bot.execute(new SendMessage(userId, "https://telegra.ph/Mezhregionalnyj-cifrovoj-forum-Obmen-opytom-vnedreniya-i-ehkspluatacii-Rossijskih-produktov-01-23"));
+
                         action.setAction(userId.toString(), constant.USER_FLAGS_DEFAULT);
                         if (action.check(userId.toString())) {
                             if (action.getData(userId.toString(), 4).equals(" ")) {
                                 request = (new SendMessage(chatId, "Пожалуйста, введите ФИО (как к Вам обращаться?)\n"));
                                 action.setAction(userId.toString(), constant.USER_FLAGS_REGISTRY);
                             } else {
-                                action.sendMenu(userId.toString());
+                                int messageId = message.messageId() + 1;
+                                action.sendMenu(userId.toString(), messageId);
                             }
                         } else {
                             request = (new SendMessage(chatId, "Пожалуйста, введите ФИО (как к Вам обращаться?)\n"));
@@ -87,6 +100,32 @@ public class Bot {
                 }
             }
 
+        } else {
+            if (callbackQuery != null) {
+
+                // обработка кнопок
+                String[] data = callbackQuery.data().split("/");
+                String chatId = data[0];
+                int messageId = Integer.parseInt(data[1]);
+                String buttonId = data[2];
+
+                switch (buttonId) {
+                    case "1" -> {
+                        // программа мероприятия
+                        bot.execute(new SendMessage(chatId,"t"));
+                    }
+                    case "2" -> {
+                        // досье спикеров
+                    }
+                    case "3" -> {
+                        // задать вопрос из меню
+                    }
+                    case "4" -> {
+                        // записаться на круглый стол
+                    }
+                }
+
+            }
         }
 
         if (request != null) {
