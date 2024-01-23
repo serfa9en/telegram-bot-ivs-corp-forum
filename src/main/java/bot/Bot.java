@@ -7,6 +7,7 @@ import com.pengrad.telegrambot.model.File;
 import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.BaseRequest;
+import com.pengrad.telegrambot.request.EditMessageText;
 import com.pengrad.telegrambot.request.SendMessage;
 import com.pengrad.telegrambot.request.SetWebhook;
 import constant.Constant;
@@ -17,7 +18,7 @@ import java.io.IOException;
 public class Bot {
 
     private final TelegramBot bot = new TelegramBot(System.getenv("BOT_TOKEN"));
-    private final String userFile = "/home/ICS_HOME/mbelyaeva/Рабочий стол/Работа/TG_bot/Форум/ItForum/src/main/java/based/users.xlsx";
+    private final String userFile = "/home/masha/Рабочий стол/telegram bot/telegram-bot-ivs-corp-forum-master/src/main/java/based/users.xlsx";
     private Action action;
     private Constant constant;
 
@@ -73,10 +74,6 @@ public class Bot {
 
                     case "/menu":
                     case "/menu@itforum_2024_bot": {
-                        bot.execute(new SendMessage(userId, "j"));
-
-                        bot.execute(new SendMessage(userId, "https://telegra.ph/Mezhregionalnyj-cifrovoj-forum-Obmen-opytom-vnedreniya-i-ehkspluatacii-Rossijskih-produktov-01-23"));
-
                         action.setAction(userId.toString(), constant.USER_FLAGS_DEFAULT);
                         if (action.check(userId.toString())) {
                             if (action.getData(userId.toString(), 4).equals(" ")) {
@@ -110,18 +107,52 @@ public class Bot {
                 String buttonId = data[2];
 
                 switch (buttonId) {
-                    case "1" -> {
-                        // программа мероприятия
-                        bot.execute(new SendMessage(chatId,"t"));
-                    }
                     case "2" -> {
                         // досье спикеров
+                        action.createSpeakers(chatId,messageId);
                     }
                     case "3" -> {
                         // задать вопрос из меню
+                        action.createQuest(chatId,messageId);
                     }
                     case "4" -> {
                         // записаться на круглый стол
+                        action.createTable(chatId,messageId);
+                    }
+                    case "5" -> {
+                        // выбрана секция инф безопасность
+                        action.createSecuritySpeakers(chatId,messageId);
+                    }
+                    case "6" -> {
+                        // выбрана секция инф технологии
+                        action.createTecnologySpeakers(chatId,messageId);
+                    }
+                    case "7" -> {
+                        // выбрана секция инф безопасность вопрос
+                        action.createSecuritySpeakers(chatId,messageId);
+                    }
+                    case "8" -> {
+                        // выбрана секция инф технологии вопрос
+                        action.createTecnologySpeakers(chatId,messageId);
+                    }
+                    case "9" -> {
+                        // выбрана секция пленарное заседание
+                    }
+                    case "10" -> {
+                        // КС Цифровая Россия
+                        String tableName = "13:00-15:00 — Цифровая Россия (Зал Edison)";
+                        replyAnswerTable(chatId, messageId, tableName);
+
+                    }
+                    case "11" -> {
+                        // КС АйТи БАСТИОН
+                        String tableName = "15:30-18:45 — АйТи БАСТИОН (Зал Edison)";
+                        replyAnswerTable(chatId, messageId, tableName);
+                    }
+                    case "12" -> {
+                        // КС СДИ Софт
+                        String tableName = "16:45-17:30 — СДИ Софт (Информационная безопасность)";
+                        replyAnswerTable(chatId, messageId, tableName);
                     }
                 }
 
@@ -132,6 +163,15 @@ public class Bot {
             bot.execute(request);
         }
 
+    }
+
+    private void replyAnswerTable (String chatId, int messageId, String tableName) {
+        if (action.notTable(chatId, tableName)) {
+            action.setUserTable(chatId, tableName);
+            bot.execute(new EditMessageText(chatId, messageId, "Вы записаны"));
+        } else {
+            bot.execute(new EditMessageText(chatId, messageId, "Вы записаны"));
+        }
     }
 
 }
