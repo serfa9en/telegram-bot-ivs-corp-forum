@@ -23,20 +23,18 @@ public class UserBase {
             XSSFWorkbook workbookTemp = new XSSFWorkbook(new FileInputStream(file));
             XSSFSheet sheetActions = workbookTemp.getSheet("Users");
 
-            System.out.println("HHHH");
             for(int i = 1; i < sheetActions.getPhysicalNumberOfRows(); i++) {
-                System.out.println("DDDDD");
                 XSSFRow rowAction = sheetActions.getRow(i);
-                if (rowAction.getCell(0).getStringCellValue().equals(userId)) {
-                    System.out.println("LLLLLL");
-                    rowAction.getCell(5).setCellValue(flag);
-                    tempFlag = true;
-                    break;
+                if (rowAction.getCell(0) != null) {
+                    if (rowAction.getCell(0).getStringCellValue().equals(userId)) {
+                        rowAction.getCell(5).setCellValue(flag);
+                        tempFlag = true;
+                        break;
+                    }
                 }
             }
 
             if (!tempFlag) {
-                System.out.println("JJJJJ");
                 XSSFRow rowAction = sheetActions.createRow(sheetActions.getPhysicalNumberOfRows());
                 Cell[] cells = new Cell[6];
                 cells[0] = rowAction.createCell(0);
@@ -163,7 +161,7 @@ public class UserBase {
             for (int i = 1; i < sheetTemp.getPhysicalNumberOfRows(); i++) {
                 XSSFRow row = sheetTemp.getRow(i);
                 if (row.getCell(0).getStringCellValue().equals(userId)) {
-                    Cell column = row.getCell(4);
+                    Cell column = row.createCell(4);
                     column.setCellValue(text);
                     sheetTemp.autoSizeColumn(4);
                     break;

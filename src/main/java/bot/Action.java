@@ -65,6 +65,10 @@ public class Action {
         }
     }
 
+    public String getData(String userId, int i) {
+        return userDB.getData(userId, i);
+    }
+
     // Вывод карточки пользователя
     public String getCardUser(String userId) {
         String str = "\uD83D\uDCCC ИНФОРМАЦИЯ\n\n";
@@ -77,6 +81,33 @@ public class Action {
 
     // собираем меню из кнопок
     public void sendMenu(String userId) {
+
+        InlineKeyboardButton[] inlineKeyboardButtons0 = new InlineKeyboardButton[1];
+        inlineKeyboardButtons0[0] = new InlineKeyboardButton("Программа мероприятия");
+        inlineKeyboardButtons0[0].callbackData(userId + " " + "messageId" + " " + "schedule.data[0]");
+
+        InlineKeyboardButton[] inlineKeyboardButtons1 = new InlineKeyboardButton[1];
+        inlineKeyboardButtons1[0] = new InlineKeyboardButton("Досье спикеров");
+        inlineKeyboardButtons1[0].callbackData(userId + " " + "messageId" + " " + "schedule.data[2]");
+
+        InlineKeyboardButton[] inlineKeyboardButtons2 = new InlineKeyboardButton[1];
+        inlineKeyboardButtons2[0] = new InlineKeyboardButton("Задать вопрос");
+        inlineKeyboardButtons2[0].callbackData(userId + " " + "messageId" + " " + "schedule.data[4]");
+
+        InlineKeyboardButton[] inlineKeyboardButtons3 = new InlineKeyboardButton[1];
+        inlineKeyboardButtons3[0] = new InlineKeyboardButton("Записаться на круглый стол");
+        inlineKeyboardButtons3[0].callbackData(userId + " " + "messageId" + " " + "schedule.data[6]");
+
+        InlineKeyboardMarkup inlineKeyboard = new InlineKeyboardMarkup(
+                inlineKeyboardButtons0,
+                inlineKeyboardButtons1,
+                inlineKeyboardButtons2,
+                inlineKeyboardButtons3
+        );
+
+
+        bot.execute(new SendMessage(userId, "Главное меню:")
+                .replyMarkup(inlineKeyboard));
 
     }
 }

@@ -50,7 +50,12 @@ public class Bot {
                     case "/show_info@itforum_2024_bot":
                         action.setAction(userId.toString(), constant.USER_FLAGS_DEFAULT);
                         if (action.check(userId.toString())) {
-                            request = new SendMessage(chatId, action.getCardUser(userId.toString()));
+                            if (action.getData(userId.toString(), 4).equals(" ")) {
+                                request = (new SendMessage(chatId, "Пожалуйста, введите ФИО (как к Вам обращаться?)\n"));
+                                action.setAction(userId.toString(), constant.USER_FLAGS_REGISTRY);
+                            } else {
+                                request = new SendMessage(chatId, action.getCardUser(userId.toString()));
+                            }
                         } else {
                             request = (new SendMessage(chatId, "Пожалуйста, введите ФИО (как к Вам обращаться?)\n"));
                             action.setAction(userId.toString(), constant.USER_FLAGS_REGISTRY);
@@ -60,7 +65,20 @@ public class Bot {
 
                     case "/menu":
                     case "/menu@itforum_2024_bot": {
-                        System.out.println("Меню");
+                        action.setAction(userId.toString(), constant.USER_FLAGS_DEFAULT);
+                        if (action.check(userId.toString())) {
+                            if (action.getData(userId.toString(), 4).equals(" ")) {
+                                request = (new SendMessage(chatId, "Пожалуйста, введите ФИО (как к Вам обращаться?)\n"));
+                                action.setAction(userId.toString(), constant.USER_FLAGS_REGISTRY);
+                            } else {
+                                action.sendMenu(userId.toString());
+                            }
+                        } else {
+                            request = (new SendMessage(chatId, "Пожалуйста, введите ФИО (как к Вам обращаться?)\n"));
+                            action.createNewUser(userId.toString());
+                            action.setAction(userId.toString(), constant.USER_FLAGS_REGISTRY);
+                        }
+                        break;
                     }
 
                     default: {
