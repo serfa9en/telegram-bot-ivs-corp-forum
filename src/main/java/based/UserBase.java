@@ -23,20 +23,18 @@ public class UserBase {
             XSSFWorkbook workbookTemp = new XSSFWorkbook(new FileInputStream(file));
             XSSFSheet sheetActions = workbookTemp.getSheet("Users");
 
-            System.out.println("HHHH");
             for(int i = 1; i < sheetActions.getPhysicalNumberOfRows(); i++) {
-                System.out.println("DDDDD");
                 XSSFRow rowAction = sheetActions.getRow(i);
-                if (rowAction.getCell(0).getStringCellValue().equals(userId)) {
-                    System.out.println("LLLLLL");
-                    rowAction.getCell(5).setCellValue(flag);
-                    tempFlag = true;
-                    break;
+                if (rowAction.getCell(0) != null) {
+                    if (rowAction.getCell(0).getStringCellValue().equals(userId)) {
+                        rowAction.getCell(5).setCellValue(flag);
+                        tempFlag = true;
+                        break;
+                    }
                 }
             }
 
             if (!tempFlag) {
-                System.out.println("JJJJJ");
                 XSSFRow rowAction = sheetActions.createRow(sheetActions.getPhysicalNumberOfRows());
                 Cell[] cells = new Cell[6];
                 cells[0] = rowAction.createCell(0);
@@ -163,7 +161,7 @@ public class UserBase {
             for (int i = 1; i < sheetTemp.getPhysicalNumberOfRows(); i++) {
                 XSSFRow row = sheetTemp.getRow(i);
                 if (row.getCell(0).getStringCellValue().equals(userId)) {
-                    Cell column = row.getCell(4);
+                    Cell column = row.createCell(4);
                     column.setCellValue(text);
                     sheetTemp.autoSizeColumn(4);
                     break;
@@ -205,5 +203,131 @@ public class UserBase {
         }
 
         return data;
+    }
+
+    // есть записи на круглый стол?
+    public boolean isTable (String userId) {
+        boolean flag = false;
+        try {
+            XSSFWorkbook workbookTemp = new XSSFWorkbook(new FileInputStream(file));
+            XSSFSheet sheetTemp = workbookTemp.getSheet("Tables");
+
+            for (int i = 1; i < sheetTemp.getPhysicalNumberOfRows(); i++) {
+                XSSFRow row = sheetTemp.getRow(i);
+                if (row.getCell(0).getStringCellValue().equals(userId)) {
+                    flag = true;
+                    break;
+                }
+            }
+
+            workbookTemp.close();
+
+        } catch (Exception ex) {
+            System.out.println("UserBase: isTable");
+        }
+        return flag;
+    }
+
+    public boolean isUserTable (String userId, String text) {
+        boolean flag = true;
+        try {
+            XSSFWorkbook workbookTemp = new XSSFWorkbook(new FileInputStream(file));
+            XSSFSheet sheetTemp = workbookTemp.getSheet("Tables");
+
+            for (int i = 1; i < sheetTemp.getPhysicalNumberOfRows(); i++) {
+                XSSFRow row = sheetTemp.getRow(i);
+                if (row.getCell(0).getStringCellValue().equals(userId)) {
+                    if (row.getCell(1).getStringCellValue().equals(text)) {
+                        flag = false;
+                        break;
+                    }
+                }
+            }
+
+            workbookTemp.close();
+
+        } catch (Exception ex) {
+            System.out.println("UserBase: isUserTable");
+        }
+        return flag;
+    }
+
+    public String getTables (String userId) {
+        String str = "";
+        int count = 0;
+
+        try {
+            XSSFWorkbook workbookTemp = new XSSFWorkbook(new FileInputStream(file));
+            XSSFSheet sheetTemp = workbookTemp.getSheet("Tables");
+
+            for (int i = 1; i < sheetTemp.getPhysicalNumberOfRows(); i++) {
+                XSSFRow row = sheetTemp.getRow(i);
+                if (row.getCell(0).getStringCellValue().equals(userId)) {
+                    count++;
+                }
+            }
+
+            String[] array = new String[count];
+            int ind = 0;
+
+            for (int i = 1; i < sheetTemp.getPhysicalNumberOfRows(); i++) {
+                XSSFRow row = sheetTemp.getRow(i);
+                if (row.getCell(0).getStringCellValue().equals(userId)) {
+                    array[ind] = row.getCell(1).getStringCellValue();
+                    ind++;
+                }
+            }
+
+            array = sort(array);
+
+            for (int i = 0; i < array.length; i++) {
+                str += "▪\uFE0F " + array[i] + "\n";
+            }
+
+            workbookTemp.close();
+
+        } catch (Exception ex) {
+            System.out.println("UserBase: getTables");
+        }
+        return str;
+    }
+
+    private String[] sort (String[] array) {
+        String[] str = new String[array.length];
+
+        for (int j = 0; j < array.length; j++) {
+            String temp = array[j];
+            int t = Integer.parseInt(array[j].substring(0,2));
+            for (int i = j+1; i < array.length; i++) {
+                if (t > Integer.parseInt(array[i].substring(0,2))) {
+                    temp = array[i];
+                    array[i] = array[j];
+                    array[j] = temp;
+                }
+            }
+            str[j] = temp;
+        }
+
+        return str;
+    }
+
+    public void setTable(String userId, String text) {
+        try {
+            XSSFWorkbook workbookTemp = new XSSFWorkbook(new FileInputStream(file));
+            XSSFSheet sheetActions = workbookTemp.getSheet("Tables");
+
+            XSSFRow rowAction = sheetActions.createRow(sheetActions.getPhysicalNumberOfRows());
+            Cell[] cells = new Cell[2];
+            cells[0] = rowAction.createCell(0);
+            cells[0].setCellValue(userId);
+            cells[1] = rowAction.createCell(1);
+            cells[1].setCellValue(text);
+
+            workbookTemp.write(new FileOutputStream(file));
+            workbookTemp.close();
+
+        } catch (Exception ex) {
+            System.out.println("UserBase: setTable");
+        }
     }
 }
