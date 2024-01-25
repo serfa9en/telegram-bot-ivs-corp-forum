@@ -103,12 +103,10 @@ public class UserBase {
                 for (int i = 1; i < sheetTemp.getPhysicalNumberOfRows(); i++) {
                     XSSFRow row = sheetTemp.getRow(i);
                     if (row.getCell(0).getStringCellValue().equals(userId)) {
-                        for (int j = 1; j < countFieldUsers; j++) {
-                            if (row.getCell(j) != null) {
-                                if (row.getCell(j).getStringCellValue().equals("")) {
-                                    flag = false;
-                                    break;
-                                }
+                        if (row.getCell(4) != null) {
+                            if (row.getCell(4).getStringCellValue().equals("")) {
+                                flag = false;
+                                break;
                             }
                         }
                     }

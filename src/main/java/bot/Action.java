@@ -7,7 +7,9 @@ import com.pengrad.telegrambot.model.request.InlineKeyboardButton;
 import com.pengrad.telegrambot.model.request.InlineKeyboardMarkup;
 import com.pengrad.telegrambot.request.EditMessageText;
 import com.pengrad.telegrambot.request.SendMessage;
-import constant.Constant;
+import properties.Buttons;
+import properties.Constant;
+import properties.Speaker;
 
 public class Action {
     private TelegramBot bot;
@@ -15,6 +17,8 @@ public class Action {
     private Long chatId;
     private UserBase userDB;
     Constant constant = new Constant();
+    Speaker speaker = new Speaker();
+    Buttons btnName = new Buttons();
 
     public Action (TelegramBot tbot) {
         this.bot = tbot;
@@ -113,39 +117,52 @@ public class Action {
                 .replyMarkup(inlineKeyboard));
 
     }
+
+    public void sendEditMenu(String userId, int messageId) {
+
+        InlineKeyboardButton[] inlineKeyboardButtons0 = new InlineKeyboardButton[1];
+        inlineKeyboardButtons0[0] = new InlineKeyboardButton(btnName.MENU_PROGRAMM);
+        inlineKeyboardButtons0[0].callbackData(userId + "/" + messageId + "/" + constant.MENU_PROGRAM);
+        inlineKeyboardButtons0[0].url("https://telegra.ph/Mezhregionalnyj-cifrovoj-forum-Obmen-opytom-vnedreniya-i-ehkspluatacii-Rossijskih-produktov-01-23");
+
+        InlineKeyboardButton[] inlineKeyboardButtons1 = new InlineKeyboardButton[1];
+        inlineKeyboardButtons1[0] = new InlineKeyboardButton(btnName.MENU_SPEAKERS);
+        inlineKeyboardButtons1[0].callbackData(userId + "/" + messageId + "/" + constant.MENU_SPEAKERS);
+
+        InlineKeyboardButton[] inlineKeyboardButtons2 = new InlineKeyboardButton[1];
+        inlineKeyboardButtons2[0] = new InlineKeyboardButton(btnName.MENU_QUESTION);
+        inlineKeyboardButtons2[0].callbackData(userId + "/" + messageId + "/" + constant.MENU_QUEST);
+
+        InlineKeyboardButton[] inlineKeyboardButtons3 = new InlineKeyboardButton[1];
+        inlineKeyboardButtons3[0] = new InlineKeyboardButton(btnName.MENU_TABLE);
+        inlineKeyboardButtons3[0].callbackData(userId + "/" + messageId + "/" + constant.MENU_TABLE);
+
+        InlineKeyboardMarkup inlineKeyboard = new InlineKeyboardMarkup(
+                inlineKeyboardButtons0,
+                inlineKeyboardButtons1,
+                inlineKeyboardButtons2,
+                inlineKeyboardButtons3
+        );
+
+
+        bot.execute(new EditMessageText(userId,messageId, "Главное меню:")
+                .replyMarkup(inlineKeyboard));
+
+    }
     
     // досье спикеров
     public void createSpeakers (String userId, int messageId) {
         InlineKeyboardButton[] inlineKeyboardButtons0 = new InlineKeyboardButton[1];
-        inlineKeyboardButtons0[0] = new InlineKeyboardButton("Информационная безопасность");
+        inlineKeyboardButtons0[0] = new InlineKeyboardButton(btnName.SPEAKERS_SECTIONS[0]);
         inlineKeyboardButtons0[0].callbackData(userId + "/" + messageId + "/" + constant.SPEAKERS_SECURITY);
 
         InlineKeyboardButton[] inlineKeyboardButtons1 = new InlineKeyboardButton[1];
-        inlineKeyboardButtons1[0] = new InlineKeyboardButton("Информационные технологии ");
+        inlineKeyboardButtons1[0] = new InlineKeyboardButton(btnName.SPEAKERS_SECTIONS[1]);
         inlineKeyboardButtons1[0].callbackData(userId + "/" + messageId + "/" + constant.SPEAKERS_TECNOLOGY);
 
-        InlineKeyboardMarkup inlineKeyboard = new InlineKeyboardMarkup(
-                inlineKeyboardButtons0,
-                inlineKeyboardButtons1
-        );
-
-        bot.execute(new EditMessageText (userId, messageId, "Выберите секцию:")
-                .replyMarkup(inlineKeyboard));
-    }
-
-    //задать вопрос
-    public void createQuest (String userId, int messageId) {
-        InlineKeyboardButton[] inlineKeyboardButtons0 = new InlineKeyboardButton[1];
-        inlineKeyboardButtons0[0] = new InlineKeyboardButton("Информационная безопасность");
-        inlineKeyboardButtons0[0].callbackData(userId + "/" + messageId + "/" + constant.QUEST_SECURITY);
-
-        InlineKeyboardButton[] inlineKeyboardButtons1 = new InlineKeyboardButton[1];
-        inlineKeyboardButtons1[0] = new InlineKeyboardButton("Информационные технологии");
-        inlineKeyboardButtons1[0].callbackData(userId + "/" + messageId + "/" + constant.QUEST_TECNOLOGY);
-
         InlineKeyboardButton[] inlineKeyboardButtons2 = new InlineKeyboardButton[1];
-        inlineKeyboardButtons2[0] = new InlineKeyboardButton("Пленарное заседание");
-        inlineKeyboardButtons2[0].callbackData(userId + "/" + messageId + "/" + constant.QUEST_PLENARY);
+        inlineKeyboardButtons2[0] = new InlineKeyboardButton(btnName.BACK);
+        inlineKeyboardButtons2[0].callbackData(userId + "/" + messageId + "/" + constant.BACK);
 
         InlineKeyboardMarkup inlineKeyboard = new InlineKeyboardMarkup(
                 inlineKeyboardButtons0,
@@ -153,7 +170,39 @@ public class Action {
                 inlineKeyboardButtons2
         );
 
-        bot.execute(new EditMessageText (userId, messageId, "Выберите секцию:")
+        String text = btnName.MENU_SPEAKERS.toUpperCase() + "\n\n" + "Выберите секцию:";
+
+        bot.execute(new EditMessageText (userId, messageId, text)
+                .replyMarkup(inlineKeyboard));
+    }
+
+    //задать вопрос
+    public void createQuest (String userId, int messageId) {
+        InlineKeyboardButton[] inlineKeyboardButtons0 = new InlineKeyboardButton[1];
+        inlineKeyboardButtons0[0] = new InlineKeyboardButton(btnName.SPEAKERS_SECTIONS[0]);
+        inlineKeyboardButtons0[0].callbackData(userId + "/" + messageId + "/" + constant.SPEAKERS_SECURITY);
+
+        InlineKeyboardButton[] inlineKeyboardButtons1 = new InlineKeyboardButton[1];
+        inlineKeyboardButtons1[0] = new InlineKeyboardButton(btnName.SPEAKERS_SECTIONS[1]);
+        inlineKeyboardButtons1[0].callbackData(userId + "/" + messageId + "/" + constant.SPEAKERS_TECNOLOGY);
+
+        InlineKeyboardButton[] inlineKeyboardButtons2 = new InlineKeyboardButton[1];
+        inlineKeyboardButtons2[0] = new InlineKeyboardButton(btnName.QUEST_PLENARY);
+        inlineKeyboardButtons2[0].callbackData(userId + "/" + messageId + "/" + constant.QUEST_PLENARY);
+
+        InlineKeyboardButton[] inlineKeyboardButtons3 = new InlineKeyboardButton[1];
+        inlineKeyboardButtons3[0] = new InlineKeyboardButton(btnName.BACK);
+        inlineKeyboardButtons3[0].callbackData(userId + "/" + messageId + "/" + constant.BACK);
+
+        InlineKeyboardMarkup inlineKeyboard = new InlineKeyboardMarkup(
+                inlineKeyboardButtons0,
+                inlineKeyboardButtons1,
+                inlineKeyboardButtons2,
+                inlineKeyboardButtons3
+        );
+
+        String text = btnName.MENU_QUESTION.toUpperCase() + "\n\n" + "Выберите секцию:";
+        bot.execute(new EditMessageText (userId, messageId, text)
                 .replyMarkup(inlineKeyboard));
     }
 
@@ -171,10 +220,15 @@ public class Action {
         inlineKeyboardButtons2[0] = new InlineKeyboardButton("СДИ Софт");
         inlineKeyboardButtons2[0].callbackData(userId + "/" + messageId + "/" + constant.TABLE_3);
 
+        InlineKeyboardButton[] inlineKeyboardButtons3 = new InlineKeyboardButton[1];
+        inlineKeyboardButtons3[0] = new InlineKeyboardButton(btnName.BACK);
+        inlineKeyboardButtons3[0].callbackData(userId + "/" + messageId + "/" + constant.BACK);
+
         InlineKeyboardMarkup inlineKeyboard = new InlineKeyboardMarkup(
                 inlineKeyboardButtons0,
                 inlineKeyboardButtons1,
-                inlineKeyboardButtons2
+                inlineKeyboardButtons2,
+                inlineKeyboardButtons3
         );
 
         bot.execute(new EditMessageText (userId, messageId, "\uD83D\uDCCD КРУГЛЫЕ СТОЛЫ\n" +
@@ -195,9 +249,10 @@ public class Action {
                 "СКДПУ НТ является единственной на данный момент PAM-системой, сертифицированной ФСТЭК России. " +
                 "Отечественный разработчик решений в области информационной безопасности.\n" +
                 "\n" +
-                "\uD83D\uDCCE 16:45 - 17:30 — СДИ Софт\n" +
-                "Информационная безопасность\n" +
-                "Евгений Кривоносов, Генеральный директор ООО «СДИ СОФТ»" + getUserTables(userId))
+                "\uD83D\uDCCE 16:45 – 18:15 — СДИ Софт\n" +
+                "Зал Информационная безопасность\n" +
+                "\n"
+                + getUserTables(userId))
                 .replyMarkup(inlineKeyboard));
     }
 
@@ -219,59 +274,55 @@ public class Action {
         userDB.setTable(userId,text);
     }
 
-    public void createSecuritySpeakers (String userId, int messageId) {
-        InlineKeyboardButton[] inlineKeyboardButtons0 = new InlineKeyboardButton[1];
-        inlineKeyboardButtons0[0] = new InlineKeyboardButton("Алтухов-В");
-        inlineKeyboardButtons0[0].callbackData(userId + "/" + messageId + "/" + constant.SPEAKER_SECURITY_1);
+    public void createButtonsSpeakers (String userId, int messageId, String idSection) {
+        InlineKeyboardButton[][] inlineButtons = new InlineKeyboardButton[speaker.getCount(idSection)+2][1];
+        for(int i = 0; i < inlineButtons.length-2; i++) {
+            inlineButtons[i][0] = new InlineKeyboardButton(speaker.getName(idSection,speaker.getId(idSection,i)));
+            inlineButtons[i][0].callbackData(userId + "/" + messageId + "/" + speaker.getId(idSection,i));
+        }
 
-        InlineKeyboardButton[] inlineKeyboardButtons1 = new InlineKeyboardButton[1];
-        inlineKeyboardButtons1[0] = new InlineKeyboardButton("Владимир Богачев_РЕД Софт");
-        inlineKeyboardButtons1[0].callbackData(userId + "/" + messageId + "/" + constant.SPEAKER_SECURITY_2);
+        String text = "";
+        if (idSection.equals("5")) {
+            text =  btnName.SPEAKERS_SECTIONS[0].toUpperCase();
+        } else {
+            text =  btnName.SPEAKERS_SECTIONS[1].toUpperCase();
+        }
 
-        InlineKeyboardButton[] inlineKeyboardButtons2 = new InlineKeyboardButton[1];
-        inlineKeyboardButtons2[0] = new InlineKeyboardButton("Дятлов Иван Михайлович Конфидент");
-        inlineKeyboardButtons2[0].callbackData(userId + "/" + messageId + "/" + constant.SPEAKER_SECURITY_3);
+        inlineButtons[inlineButtons.length-2][0] = new InlineKeyboardButton("\uD83D\uDD19 Назад");
+        inlineButtons[inlineButtons.length-2][0].callbackData(userId + "/" + messageId + "/" + constant.SPEAKER_BACK);
+        inlineButtons[inlineButtons.length-1][0] = new InlineKeyboardButton("\uD83D\uDD1A В меню");
+        inlineButtons[inlineButtons.length-1][0].callbackData(userId + "/" + messageId + "/" + constant.MENU);
 
-        InlineKeyboardButton[] inlineKeyboardButtons3 = new InlineKeyboardButton[1];
-        inlineKeyboardButtons3[0] = new InlineKeyboardButton("Ландырь А");
-        inlineKeyboardButtons3[0].callbackData(userId + "/" + messageId + "/" + constant.SPEAKER_SECURITY_4);
-
-        InlineKeyboardMarkup inlineKeyboard = new InlineKeyboardMarkup(
-                inlineKeyboardButtons0,
-                inlineKeyboardButtons1,
-                inlineKeyboardButtons2,
-                inlineKeyboardButtons3
-        );
-
-        bot.execute(new EditMessageText (userId, messageId, "Спикеры секции 'Информационная безопасность'")
-                .replyMarkup(inlineKeyboard));
+        bot.execute(new EditMessageText (userId, messageId, text + ":\n\n" + getSpeakerCard(idSection))
+                .replyMarkup(
+                        new InlineKeyboardMarkup(
+                                inlineButtons
+                        )
+                ));
     }
 
-    public void createTecnologySpeakers (String userId, int messageId) {
+    private String getSpeakerCard(String idSection) {
+        String str = "";
+        for (int i = 0; i < speaker.getCount(idSection); i++) {
+            str += "▪\uFE0F " + speaker.getName(idSection,speaker.getId(idSection,i)) + "\n" +
+                    speaker.getDescription(idSection,speaker.getId(idSection,i)) + "\n\n";
+        }
+        return str;
+    }
+
+    public void createSpeakerCard (String userId, int messageId, String idSpeaker) {
+
         InlineKeyboardButton[] inlineKeyboardButtons0 = new InlineKeyboardButton[1];
-        inlineKeyboardButtons0[0] = new InlineKeyboardButton("Михаил Самсонов_PT");
-        inlineKeyboardButtons0[0].callbackData(userId + "/" + messageId + "/" + constant.SPEAKER_TECNOLOGY_1);
-
-        InlineKeyboardButton[] inlineKeyboardButtons1 = new InlineKeyboardButton[1];
-        inlineKeyboardButtons1[0] = new InlineKeyboardButton("Немкин А.И.");
-        inlineKeyboardButtons1[0].callbackData(userId + "/" + messageId + "/" + constant.SPEAKER_TECNOLOGY_2);
-
-        InlineKeyboardButton[] inlineKeyboardButtons2 = new InlineKeyboardButton[1];
-        inlineKeyboardButtons2[0] = new InlineKeyboardButton("Фото_Кривоносов Е.Н._СДИ Софт");
-        inlineKeyboardButtons2[0].callbackData(userId + "/" + messageId + "/" + constant.SPEAKER_TECNOLOGY_3);
-
-        InlineKeyboardButton[] inlineKeyboardButtons3 = new InlineKeyboardButton[1];
-        inlineKeyboardButtons3[0] = new InlineKeyboardButton("Шиловских Петр Александрович");
-        inlineKeyboardButtons3[0].callbackData(userId + "/" + messageId + "/" + constant.SPEAKER_TECNOLOGY_4);
+        inlineKeyboardButtons0[0] = new InlineKeyboardButton("Задать вопрос");
+        inlineKeyboardButtons0[0].callbackData(userId + "/" + messageId + "/" + "145");
 
         InlineKeyboardMarkup inlineKeyboard = new InlineKeyboardMarkup(
-                inlineKeyboardButtons0,
-                inlineKeyboardButtons1,
-                inlineKeyboardButtons2,
-                inlineKeyboardButtons3
+                inlineKeyboardButtons0
         );
 
-        bot.execute(new EditMessageText (userId, messageId, "Спикеры секции 'Информационные технологии'")
+        String str = speaker.getNameId(idSpeaker) + "\n" + speaker.getDescriptionId(idSpeaker);
+
+        bot.execute(new EditMessageText(userId, messageId, str)
                 .replyMarkup(inlineKeyboard));
     }
 }
