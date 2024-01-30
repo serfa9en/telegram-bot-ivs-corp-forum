@@ -1,66 +1,86 @@
 package bot;
 
-import based.UserBase;
+import com.pengrad.telegrambot.model.CallbackQuery;
+import dataBased.*;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.model.Update;
-import com.pengrad.telegrambot.model.request.InlineKeyboardButton;
-import com.pengrad.telegrambot.model.request.InlineKeyboardMarkup;
-import com.pengrad.telegrambot.request.EditMessageText;
 import com.pengrad.telegrambot.request.SendMessage;
 import properties.Buttons;
 import properties.Constant;
-import properties.Speaker;
 
 public class Action {
     private TelegramBot bot;
     private Update update;
-    private Long chatId;
-    private UserBase userDB;
+    private DataBased userDB;
+    private DataBased adminDB;
+    private DataBased moderatorDB;
+    private DataBased speakerDB;
+
+    private DataBased questions;
+    private DataBased tables;
+
+    Buttons buttons;
     Constant constant = new Constant();
-    Speaker speaker = new Speaker();
-    Buttons btnName = new Buttons();
 
     public Action (TelegramBot tbot) {
         this.bot = tbot;
+        buttons = new Buttons(bot);
     }
 
     public void setUpdate(Update update) {
         this.update = update;
-        if (this.update.message() != null)  chatId = this.update.message().chat().id();
+        buttons.setUpdate(update);
+        //if (this.update.message() != null)  chatId = this.update.message().chat().id();
     }
 
     public void createDataBase(String fileUser) {
-        userDB = new UserBase(fileUser);
+        userDB = new User(fileUser);
+        adminDB = new Admin(fileUser);
+        moderatorDB = new Moderator(fileUser);
+        speakerDB = new Speaker(fileUser);
+        questions = new Question(fileUser);
+        tables = new Table(fileUser);
     }
+
+    public boolean checkIs (String userId) {
+        return userDB.isPerson(userId);
+    }
+
+    // добавляем информацию о пользователе в файл
+    public void createNewUser(String userId) {
+        userDB.setData(userId, userId, 0);
+        userDB.setData(userId, update.message().from().firstName(), 1);
+        userDB.setData(userId, update.message().from().lastName(), 2);
+        userDB.setData(userId, update.message().from().username(), 3);
+        userDB.setData(userId, "", 4);
+        userDB.setData(userId, "", 5);
+    }
+
+    // проверка кто перед нами:
+    // спикер, модератора, админ или пользователь
+    public int isPerson(String userId) {
+        // 1 - Admin
+        // 2 - Moderator
+        // 3 - Speaker
+        // 4 - User
+
+        int id = 4;
+        if (adminDB.isPerson(userId)) id = 1;
+        if (moderatorDB.isPerson(userId)) id = 2;
+        if (speakerDB.isPerson(userId)) id = 3;
+        if (userDB.isPerson(userId)) id = 4;
+
+        return id;
+    }
+
 
     // Установка флага действия
     public void setAction(String userId, String flag) {
         userDB.setFlag(userId, flag);
     }
 
-    // проверка, есть ли такой пользователь в базе
-    public boolean check(String userId) {
+    public boolean checkName(String userId) {
         return userDB.checkUser(userId);
-    }
-
-    // добавляем информацию о пользователе в файл
-    public void createNewUser(String userId) {
-        String[] str = new String[5];
-        str[0] = userId;
-        str[1] = update.message().from().firstName();
-        str[2] = update.message().from().lastName();
-        str[3] = update.message().from().username();
-        str[4] = "";
-        userDB.addNewUser(str);
-    }
-
-    // добавляем ФИО
-    private void registration (String userId) {
-        userDB.addName(userId, update.message().text());
-        setAction(userId, constant.USER_FLAGS_DEFAULT);
-        bot.execute(new SendMessage(userId, getCardUser(userId)));
-        int messageId = update.message().messageId() + 1;
-        sendMenu(userId, messageId);
     }
 
     // Что делаем при дефолтной строки
@@ -69,260 +89,237 @@ public class Action {
         if (userDB.getFlag(userId).equals(constant.USER_FLAGS_REGISTRY)) {
             registration(userId);
         }
+
+//        // задаем вопрос модератору
+//        if (userDB.getFlag(userId).equals(constant.USER_FLAGS_QUESTION_PLENARY)) {
+//            askQuestion(userId);
+//            // System.out.println("HH");
+//        }
     }
 
-    public String getData(String userId, int i) {
-        return userDB.getData(userId, i);
+    // добавляем ФИО
+    private void registration (String userId) {
+        userDB.setData(userId, update.message().text(),4);
+        setAction(userId, constant.USER_FLAGS_DEFAULT);
+        bot.execute(new SendMessage(userId, getCardUser(userId)));
+        sendMenu(userId);
     }
 
-    // Вывод карточки пользователя
+        // Вывод карточки пользователя
     public String getCardUser(String userId) {
         String str = "\uD83D\uDCCC ИНФОРМАЦИЯ\n\n";
-        str += "Имя: " + userDB.getData(userId, 4) + "\n\n";;
-//        str += "✏\uFE0F Если Вы хотите изменить ФИО], введите /edit\n\n";
-        str += "Здесь будет история вопросов\n\n";
+        str += userDB.getData(userId, 4) + "\n\n";
+        str += "➖➖➖\n";
+        str += getUserQuestions(userId);
         str += getUserTables(userId);
         return str;
     }
 
-    // собираем меню из кнопок
-    public void sendMenu(String userId, int messageId) {
-
-        InlineKeyboardButton[] inlineKeyboardButtons0 = new InlineKeyboardButton[1];
-        inlineKeyboardButtons0[0] = new InlineKeyboardButton("Программа мероприятия");
-        inlineKeyboardButtons0[0].callbackData(userId + "/" + messageId + "/" + constant.MENU_PROGRAM);
-        inlineKeyboardButtons0[0].url("https://telegra.ph/Mezhregionalnyj-cifrovoj-forum-Obmen-opytom-vnedreniya-i-ehkspluatacii-Rossijskih-produktov-01-23");
-
-        InlineKeyboardButton[] inlineKeyboardButtons1 = new InlineKeyboardButton[1];
-        inlineKeyboardButtons1[0] = new InlineKeyboardButton("Досье спикеров");
-        inlineKeyboardButtons1[0].callbackData(userId + "/" + messageId + "/" + constant.MENU_SPEAKERS);
-
-        InlineKeyboardButton[] inlineKeyboardButtons2 = new InlineKeyboardButton[1];
-        inlineKeyboardButtons2[0] = new InlineKeyboardButton("Задать вопрос");
-        inlineKeyboardButtons2[0].callbackData(userId + "/" + messageId + "/" + constant.MENU_QUEST);
-
-        InlineKeyboardButton[] inlineKeyboardButtons3 = new InlineKeyboardButton[1];
-        inlineKeyboardButtons3[0] = new InlineKeyboardButton("Записаться на круглый стол");
-        inlineKeyboardButtons3[0].callbackData(userId + "/" + messageId + "/" + constant.MENU_TABLE);
-
-        InlineKeyboardMarkup inlineKeyboard = new InlineKeyboardMarkup(
-                inlineKeyboardButtons0,
-                inlineKeyboardButtons1,
-                inlineKeyboardButtons2,
-                inlineKeyboardButtons3
-        );
-
-
-        bot.execute(new SendMessage(userId, "Главное меню:")
-                .replyMarkup(inlineKeyboard));
-
+    public void sendMenu (String userId) {
+        int messageId = update.message().messageId() + 1;
+        buttons.createMenu(userId, messageId);
     }
 
-    public void sendEditMenu(String userId, int messageId) {
-
-        InlineKeyboardButton[] inlineKeyboardButtons0 = new InlineKeyboardButton[1];
-        inlineKeyboardButtons0[0] = new InlineKeyboardButton(btnName.MENU_PROGRAMM);
-        inlineKeyboardButtons0[0].callbackData(userId + "/" + messageId + "/" + constant.MENU_PROGRAM);
-        inlineKeyboardButtons0[0].url("https://telegra.ph/Mezhregionalnyj-cifrovoj-forum-Obmen-opytom-vnedreniya-i-ehkspluatacii-Rossijskih-produktov-01-23");
-
-        InlineKeyboardButton[] inlineKeyboardButtons1 = new InlineKeyboardButton[1];
-        inlineKeyboardButtons1[0] = new InlineKeyboardButton(btnName.MENU_SPEAKERS);
-        inlineKeyboardButtons1[0].callbackData(userId + "/" + messageId + "/" + constant.MENU_SPEAKERS);
-
-        InlineKeyboardButton[] inlineKeyboardButtons2 = new InlineKeyboardButton[1];
-        inlineKeyboardButtons2[0] = new InlineKeyboardButton(btnName.MENU_QUESTION);
-        inlineKeyboardButtons2[0].callbackData(userId + "/" + messageId + "/" + constant.MENU_QUEST);
-
-        InlineKeyboardButton[] inlineKeyboardButtons3 = new InlineKeyboardButton[1];
-        inlineKeyboardButtons3[0] = new InlineKeyboardButton(btnName.MENU_TABLE);
-        inlineKeyboardButtons3[0].callbackData(userId + "/" + messageId + "/" + constant.MENU_TABLE);
-
-        InlineKeyboardMarkup inlineKeyboard = new InlineKeyboardMarkup(
-                inlineKeyboardButtons0,
-                inlineKeyboardButtons1,
-                inlineKeyboardButtons2,
-                inlineKeyboardButtons3
-        );
-
-
-        bot.execute(new EditMessageText(userId,messageId, "Главное меню:")
-                .replyMarkup(inlineKeyboard));
-
-    }
-    
-    // досье спикеров
-    public void createSpeakers (String userId, int messageId) {
-        InlineKeyboardButton[] inlineKeyboardButtons0 = new InlineKeyboardButton[1];
-        inlineKeyboardButtons0[0] = new InlineKeyboardButton(btnName.SPEAKERS_SECTIONS[0]);
-        inlineKeyboardButtons0[0].callbackData(userId + "/" + messageId + "/" + constant.SPEAKERS_SECURITY);
-
-        InlineKeyboardButton[] inlineKeyboardButtons1 = new InlineKeyboardButton[1];
-        inlineKeyboardButtons1[0] = new InlineKeyboardButton(btnName.SPEAKERS_SECTIONS[1]);
-        inlineKeyboardButtons1[0].callbackData(userId + "/" + messageId + "/" + constant.SPEAKERS_TECNOLOGY);
-
-        InlineKeyboardButton[] inlineKeyboardButtons2 = new InlineKeyboardButton[1];
-        inlineKeyboardButtons2[0] = new InlineKeyboardButton(btnName.BACK);
-        inlineKeyboardButtons2[0].callbackData(userId + "/" + messageId + "/" + constant.BACK);
-
-        InlineKeyboardMarkup inlineKeyboard = new InlineKeyboardMarkup(
-                inlineKeyboardButtons0,
-                inlineKeyboardButtons1,
-                inlineKeyboardButtons2
-        );
-
-        String text = btnName.MENU_SPEAKERS.toUpperCase() + "\n\n" + "Выберите секцию:";
-
-        bot.execute(new EditMessageText (userId, messageId, text)
-                .replyMarkup(inlineKeyboard));
-    }
-
-    //задать вопрос
-    public void createQuest (String userId, int messageId) {
-        InlineKeyboardButton[] inlineKeyboardButtons0 = new InlineKeyboardButton[1];
-        inlineKeyboardButtons0[0] = new InlineKeyboardButton(btnName.SPEAKERS_SECTIONS[0]);
-        inlineKeyboardButtons0[0].callbackData(userId + "/" + messageId + "/" + constant.SPEAKERS_SECURITY);
-
-        InlineKeyboardButton[] inlineKeyboardButtons1 = new InlineKeyboardButton[1];
-        inlineKeyboardButtons1[0] = new InlineKeyboardButton(btnName.SPEAKERS_SECTIONS[1]);
-        inlineKeyboardButtons1[0].callbackData(userId + "/" + messageId + "/" + constant.SPEAKERS_TECNOLOGY);
-
-        InlineKeyboardButton[] inlineKeyboardButtons2 = new InlineKeyboardButton[1];
-        inlineKeyboardButtons2[0] = new InlineKeyboardButton(btnName.QUEST_PLENARY);
-        inlineKeyboardButtons2[0].callbackData(userId + "/" + messageId + "/" + constant.QUEST_PLENARY);
-
-        InlineKeyboardButton[] inlineKeyboardButtons3 = new InlineKeyboardButton[1];
-        inlineKeyboardButtons3[0] = new InlineKeyboardButton(btnName.BACK);
-        inlineKeyboardButtons3[0].callbackData(userId + "/" + messageId + "/" + constant.BACK);
-
-        InlineKeyboardMarkup inlineKeyboard = new InlineKeyboardMarkup(
-                inlineKeyboardButtons0,
-                inlineKeyboardButtons1,
-                inlineKeyboardButtons2,
-                inlineKeyboardButtons3
-        );
-
-        String text = btnName.MENU_QUESTION.toUpperCase() + "\n\n" + "Выберите секцию:";
-        bot.execute(new EditMessageText (userId, messageId, text)
-                .replyMarkup(inlineKeyboard));
-    }
-
-    // круглый стол
-    public void createTable (String userId, int messageId) {
-        InlineKeyboardButton[] inlineKeyboardButtons0 = new InlineKeyboardButton[1];
-        inlineKeyboardButtons0[0] = new InlineKeyboardButton("Цифровая Россия");
-        inlineKeyboardButtons0[0].callbackData(userId + "/" + messageId + "/" + constant.TABLE_1);
-
-        InlineKeyboardButton[] inlineKeyboardButtons1 = new InlineKeyboardButton[1];
-        inlineKeyboardButtons1[0] = new InlineKeyboardButton("АйТи БАСТИОН");
-        inlineKeyboardButtons1[0].callbackData(userId + "/" + messageId + "/" + constant.TABLE_2);
-
-        InlineKeyboardButton[] inlineKeyboardButtons2 = new InlineKeyboardButton[1];
-        inlineKeyboardButtons2[0] = new InlineKeyboardButton("СДИ Софт");
-        inlineKeyboardButtons2[0].callbackData(userId + "/" + messageId + "/" + constant.TABLE_3);
-
-        InlineKeyboardButton[] inlineKeyboardButtons3 = new InlineKeyboardButton[1];
-        inlineKeyboardButtons3[0] = new InlineKeyboardButton(btnName.BACK);
-        inlineKeyboardButtons3[0].callbackData(userId + "/" + messageId + "/" + constant.BACK);
-
-        InlineKeyboardMarkup inlineKeyboard = new InlineKeyboardMarkup(
-                inlineKeyboardButtons0,
-                inlineKeyboardButtons1,
-                inlineKeyboardButtons2,
-                inlineKeyboardButtons3
-        );
-
-        bot.execute(new EditMessageText (userId, messageId, "\uD83D\uDCCD КРУГЛЫЕ СТОЛЫ\n" +
-                "\n" +
-                "\uD83D\uDCCE 13:00 - 15:00 — Цифровая Россия\n" +
-                "Зал Edison\n" +
-                "    • Депутат Государственной Думы, координатор федерального партпроекта «Цифровая Россия» Немкин А.И.; \n" +
-                "    • Генеральный директор фонда «Цифровая Долина Прикамья», руководитель федерального штаба партийного проекта «Цифровая Россия» Ландарь А.С.\n" +
-                "    • Министр ЦР Республики Калмыкия Этеев А.П.\n" +
-                "    • Министр ЦР, ИТ и связей Рязанской области Ульянов А.Ю. \n" +
-                "    • Министр ЦР и информационно-коммуникационных технологий Новгородской области Киблер М.В.\n" +
-                "    • Руководитель направления развития Ассоциации социальных предпринимателей Астраханской области Махринский С.В.\n" +
-                "\n" +
-                "\uD83D\uDCCE 15:30 - 18:45 — АйТи БАСТИОН\n" +
-                "Зал Edison\n" +
-                "«АйТи Бастион» — производитель системы контроля действий поставщиков ИТ-услуг СКДПУ НТ." +
-                "Компания занимает более 50% российского рынка PAM-решений (Privileged Access Management). " +
-                "СКДПУ НТ является единственной на данный момент PAM-системой, сертифицированной ФСТЭК России. " +
-                "Отечественный разработчик решений в области информационной безопасности.\n" +
-                "\n" +
-                "\uD83D\uDCCE 16:45 – 18:15 — СДИ Софт\n" +
-                "Зал Информационная безопасность\n" +
-                "\n"
-                + getUserTables(userId))
-                .replyMarkup(inlineKeyboard));
-    }
-
-    public boolean notTable (String userId, String text) {
-        return userDB.isUserTable(userId, text);
+    private String getUserQuestions (String userId) {
+        String str = questions.getData(userId, 3) + "\n\n";
+        return str;
     }
 
     private String getUserTables(String userId) {
         String str = "";
-        if (userDB.isTable(userId)) {
+        if (tables.isPerson(userId)) {
             // есть хотя бы одна запись на круглый стол
             str += "\n\n\uD83D\uDD34 ВАШИ ЗАПИСИ:\n";
-            str += userDB.getTables(userId);
+            str += tables.getData(userId, 1);
         }
         return str;
     }
 
-    public void setUserTable (String userId, String text) {
-        userDB.setTable(userId,text);
-    }
+    public void callbackQuery(CallbackQuery callbackQuery) {
+        // обработка кнопок
+        String[] data = callbackQuery.data().split("/");
+        String chatId = data[0];
+        int messageId = Integer.parseInt(data[1]);
+        String buttonId = data[2];
 
-    public void createButtonsSpeakers (String userId, int messageId, String idSection) {
-        InlineKeyboardButton[][] inlineButtons = new InlineKeyboardButton[speaker.getCount(idSection)+2][1];
-        for(int i = 0; i < inlineButtons.length-2; i++) {
-            inlineButtons[i][0] = new InlineKeyboardButton(speaker.getName(idSection,speaker.getId(idSection,i)));
-            inlineButtons[i][0].callbackData(userId + "/" + messageId + "/" + speaker.getId(idSection,i));
+        switch (buttonId) {
+            case "2","23" -> {
+                // досье спикеров
+                buttons.createSpeakers(chatId,messageId);
+            }
+            case "3", "24" -> {
+                // задать вопрос из меню
+                buttons.createQuest(chatId,messageId);
+            }
+            case "4" -> {
+                // записаться на круглый стол
+                buttons.createTable(chatId,messageId);
+            }
+            case "5", "6" -> {
+                // выбрана секция
+                buttons.createButtonsSpeakers(chatId,messageId,buttonId);
+            }
+
+            case "7","27" -> {
+                // задать вопрос на пленарном
+                //constant.setSpeaker("26");
+                buttons.createAskQuestion(chatId, messageId);
+            }
+
+            case "8" -> {
+                // КС Цифровая Россия
+                //replyAnswerTable(chatId, messageId, constant.TABLE_NAME_1);
+
+            }
+            case "9" -> {
+                // КС Цифровая Россия
+                //replyAnswerTable(chatId, messageId, constant.TABLE_NAME_2);
+
+            }
+            case "20" -> {
+                // КС СДИ Софт
+                //replyAnswerTable(chatId, messageId, constant.TABLE_NAME_3);
+            }
+            case "10","11","12","13","14",
+                    "15", "16", "17", "18", "19" -> {
+                buttons.createSpeakerCard(chatId, messageId, buttonId);
+            }
+            case "21", "22", "25" -> {
+                buttons.sendEditMenu(chatId, messageId);
+            }
         }
-
-        String text = "";
-        if (idSection.equals("5")) {
-            text =  btnName.SPEAKERS_SECTIONS[0].toUpperCase();
-        } else {
-            text =  btnName.SPEAKERS_SECTIONS[1].toUpperCase();
-        }
-
-        inlineButtons[inlineButtons.length-2][0] = new InlineKeyboardButton("\uD83D\uDD19 Назад");
-        inlineButtons[inlineButtons.length-2][0].callbackData(userId + "/" + messageId + "/" + constant.SPEAKER_BACK);
-        inlineButtons[inlineButtons.length-1][0] = new InlineKeyboardButton("\uD83D\uDD1A В меню");
-        inlineButtons[inlineButtons.length-1][0].callbackData(userId + "/" + messageId + "/" + constant.MENU);
-
-        bot.execute(new EditMessageText (userId, messageId, text + ":\n\n" + getSpeakerCard(idSection))
-                .replyMarkup(
-                        new InlineKeyboardMarkup(
-                                inlineButtons
-                        )
-                ));
     }
 
-    private String getSpeakerCard(String idSection) {
-        String str = "";
-        for (int i = 0; i < speaker.getCount(idSection); i++) {
-            str += "▪\uFE0F " + speaker.getName(idSection,speaker.getId(idSection,i)) + "\n" +
-                    speaker.getDescription(idSection,speaker.getId(idSection,i)) + "\n\n";
-        }
-        return str;
-    }
-
-    public void createSpeakerCard (String userId, int messageId, String idSpeaker) {
-
-        InlineKeyboardButton[] inlineKeyboardButtons0 = new InlineKeyboardButton[1];
-        inlineKeyboardButtons0[0] = new InlineKeyboardButton("Задать вопрос");
-        inlineKeyboardButtons0[0].callbackData(userId + "/" + messageId + "/" + "145");
-
-        InlineKeyboardMarkup inlineKeyboard = new InlineKeyboardMarkup(
-                inlineKeyboardButtons0
-        );
-
-        String str = speaker.getNameId(idSpeaker) + "\n" + speaker.getDescriptionId(idSpeaker);
-
-        bot.execute(new EditMessageText(userId, messageId, str)
-                .replyMarkup(inlineKeyboard));
-    }
+//
+//
+//    public String getData(String userId, int i) {
+//        return userDB.getData(userId, i);
+//    }
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//    public boolean notTable (String userId, String text) {
+//        return userDB.isUserTable(userId, text);
+//    }
+//
+//    private String getUserTables(String userId) {
+//        String str = "";
+//        if (userDB.isTable(userId)) {
+//            // есть хотя бы одна запись на круглый стол
+//            str += "\n\n\uD83D\uDD34 ВАШИ ЗАПИСИ:\n";
+//            str += userDB.getTables(userId);
+//        }
+//        return str;
+//    }
+//
+//    private String getUserQuestions (String userId) {
+//        String str = "";
+//        if (userDB.isTable(userId)) {
+//            // есть хотя бы один вопрос
+//            str += userDB.getQuestions(userId);
+//        }
+//        return str;
+//    }
+//
+//    public void setUserTable (String userId, String text) {
+//        userDB.setTable(userId,text);
+//    }
+//
+//
+//
+//    private String getSpeakerCard(String idSection) {
+//        String str = "";
+//        for (int i = 0; i < speaker.getCount(idSection); i++) {
+//            str += "▪\uFE0F " + speaker.getName(idSection,speaker.getId(idSection,i)) + "\n" +
+//                    speaker.getDescription(idSection,speaker.getId(idSection,i)) + "\n\n";
+//        }
+//        return str;
+//    }
+//
+//
+//
+//
+//
+//    private void askQuestion(String userId) {
+//        setAction(userId,constant.USER_FLAGS_DEFAULT);
+//
+//        String question = update.message().text();
+//        userDB.saveQuestion(userId,question,constant.PERSON);
+//
+//        sendQuestion(userId, question, constant.PERSON);
+//
+//        int id = update.message().messageId() + 2;
+//        String messageId = Integer.toString(id);
+//
+//        InlineKeyboardButton[] inlineButtons = new InlineKeyboardButton[1];
+//        inlineButtons[0] = new InlineKeyboardButton(btnName.MENU);
+//        inlineButtons[0].callbackData(userId + "/" + messageId + "/" + constant.MENU);
+//
+//        String text = "Мы получили Ваш вопрос! Скоро на него ответят ";
+//        text += "\n\n";
+//        text += "❓ Ваш вопрос: " + question;
+//        bot.execute(new SendMessage(userId,text)
+//                .replyMarkup(
+//                        new InlineKeyboardMarkup(
+//                                inlineButtons
+//                        )
+//                ));
+//    }
+//
+//    private void sendQuestion(String userId, String question, String speakerId) {
+//
+//        String text = "Вопрос: " + question;
+//
+//        bot.execute(new SendMessage(
+//                userDB.getSpeakerId(speakerId),
+//                text
+//            ));
+//
+//    }
+//
+//    public boolean isSpeaker(String userId) {
+//        return userDB.isSpeaker(userId);
+//    }
+//
+//    public boolean isAdmin(String userId) {
+//        return userDB.isAdmin(userId);
+//    }
+//
+//    public void sendAdminMenu(String userId, int messageId) {
+//        InlineKeyboardButton[] inlineKeyboardButtons0 = new InlineKeyboardButton[1];
+//        inlineKeyboardButtons0[0] = new InlineKeyboardButton("Круглые столы");
+//        inlineKeyboardButtons0[0].callbackData(userId + "/" + messageId + "/" + "99");
+//
+//        InlineKeyboardButton[] inlineKeyboardButtons1 = new InlineKeyboardButton[1];
+//        inlineKeyboardButtons1[0] = new InlineKeyboardButton("Вопросы модератору");
+//        inlineKeyboardButtons1[0].callbackData(userId + "/" + messageId + "/" + "99");
+//
+//        InlineKeyboardButton[] inlineKeyboardButtons2 = new InlineKeyboardButton[1];
+//        inlineKeyboardButtons2[0] = new InlineKeyboardButton("Вопросы спикерам");
+//        inlineKeyboardButtons2[0].callbackData(userId + "/" + messageId + "/" + "99");
+//
+//        InlineKeyboardButton[] inlineKeyboardButtons3 = new InlineKeyboardButton[1];
+//        inlineKeyboardButtons3[0] = new InlineKeyboardButton("Просмотр всех");
+//        inlineKeyboardButtons3[0].callbackData(userId + "/" + messageId + "/" + "99");
+//
+//        InlineKeyboardMarkup inlineKeyboard = new InlineKeyboardMarkup(
+//                inlineKeyboardButtons0,
+//                inlineKeyboardButtons1,
+//                inlineKeyboardButtons2,
+//                inlineKeyboardButtons3
+//        );
+//
+//
+//        bot.execute(new SendMessage(userId, "Главное меню:")
+//                .replyMarkup(inlineKeyboard));
+//
+//    }
 }
