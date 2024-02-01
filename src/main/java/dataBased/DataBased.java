@@ -12,4 +12,10 @@ public abstract class DataBased {
 
     public abstract boolean checkUser(String userId);
 
+    public abstract int getCount(String data);
+
+    public abstract String[] getDataArray(String data, int ind);
+
+    public abstract void updateDate(String userId, String tableName, int ind);
+
 }

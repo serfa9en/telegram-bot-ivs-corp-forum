@@ -65,5 +65,21 @@ public class Admin extends DataBased{
         return false;
     }
 
+    @Override
+    public int getCount(String data) {
+        // кол-во админов
+        return 0;
+    }
+
+    @Override
+    public String[] getDataArray(String data, int ind) {
+        return new String[0];
+    }
+
+    @Override
+    public void updateDate(String userId, String tableName, int ind) {
+
+    }
+
 
 }

@@ -1,6 +1,10 @@
 package bot;
 
 import com.pengrad.telegrambot.model.CallbackQuery;
+import com.pengrad.telegrambot.model.request.InlineKeyboardButton;
+import com.pengrad.telegrambot.model.request.InlineKeyboardMarkup;
+import com.pengrad.telegrambot.model.request.ParseMode;
+import com.pengrad.telegrambot.request.EditMessageText;
 import dataBased.*;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.model.Update;
@@ -40,6 +44,7 @@ public class Action {
         speakerDB = new Speaker(fileUser);
         questions = new Question(fileUser);
         tables = new Table(fileUser);
+        buttons.setFile(fileUser);
     }
 
     public boolean checkIs (String userId) {
@@ -90,24 +95,34 @@ public class Action {
             registration(userId);
         }
 
-//        // задаем вопрос модератору
-//        if (userDB.getFlag(userId).equals(constant.USER_FLAGS_QUESTION_PLENARY)) {
-//            askQuestion(userId);
-//            // System.out.println("HH");
-//        }
+        // задаем вопрос
+        if (userDB.getFlag(userId).equals(constant.USER_FLAGS_QUESTION_PLENARY)) {
+            setAction(userId,constant.USER_FLAGS_DEFAULT);
+            buttons.askQuestion(userId);
+            // System.out.println("HH");
+        }
     }
 
     // добавляем ФИО
     private void registration (String userId) {
         userDB.setData(userId, update.message().text(),4);
         setAction(userId, constant.USER_FLAGS_DEFAULT);
-        bot.execute(new SendMessage(userId, getCardUser(userId)));
+        sendCardUser(userId);
         sendMenu(userId);
+    }
+
+    public void sendCardUser(String userId) {
+        int messageId = update.message().messageId() + 1;
+        InlineKeyboardMarkup inlineKeyboard = buttons.getButtonsCardUser(userId, messageId);
+
+        bot.execute(new SendMessage(userId, getCardUser(userId))
+                .parseMode(ParseMode.HTML)
+                .replyMarkup(inlineKeyboard));
     }
 
         // Вывод карточки пользователя
     public String getCardUser(String userId) {
-        String str = "\uD83D\uDCCC ИНФОРМАЦИЯ\n\n";
+        String str = "\uD83D\uDCCC <b>ИНФОРМАЦИЯ</b>\n\n";
         str += userDB.getData(userId, 4) + "\n\n";
         str += "➖➖➖\n";
         str += getUserQuestions(userId);
@@ -126,13 +141,7 @@ public class Action {
     }
 
     private String getUserTables(String userId) {
-        String str = "";
-        if (tables.isPerson(userId)) {
-            // есть хотя бы одна запись на круглый стол
-            str += "\n\n\uD83D\uDD34 ВАШИ ЗАПИСИ:\n";
-            str += tables.getData(userId, 1);
-        }
-        return str;
+        return buttons.getUserTables(userId);
     }
 
     public void callbackQuery(CallbackQuery callbackQuery) {
@@ -143,11 +152,11 @@ public class Action {
         String buttonId = data[2];
 
         switch (buttonId) {
-            case "2","23" -> {
+            case "2","27" -> {
                 // досье спикеров
                 buttons.createSpeakers(chatId,messageId);
             }
-            case "3", "24" -> {
+            case "3", "28" -> {
                 // задать вопрос из меню
                 buttons.createQuest(chatId,messageId);
             }
@@ -160,34 +169,75 @@ public class Action {
                 buttons.createButtonsSpeakers(chatId,messageId,buttonId);
             }
 
-            case "7","27" -> {
+            case "7","29" -> {
                 // задать вопрос на пленарном
                 //constant.setSpeaker("26");
+                setAction(chatId, constant.USER_FLAGS_QUESTION_PLENARY);
                 buttons.createAskQuestion(chatId, messageId);
             }
 
             case "8" -> {
                 // КС Цифровая Россия
-                //replyAnswerTable(chatId, messageId, constant.TABLE_NAME_1);
+                buttons.replyAnswerTable(chatId, messageId, constant.TABLE_NAME_1);
 
             }
             case "9" -> {
                 // КС Цифровая Россия
-                //replyAnswerTable(chatId, messageId, constant.TABLE_NAME_2);
+                buttons.replyAnswerTable(chatId, messageId, constant.TABLE_NAME_2);
 
             }
-            case "20" -> {
+            case "10" -> {
                 // КС СДИ Софт
-                //replyAnswerTable(chatId, messageId, constant.TABLE_NAME_3);
+                buttons.replyAnswerTable(chatId, messageId, constant.TABLE_NAME_3);
             }
-            case "10","11","12","13","14",
-                    "15", "16", "17", "18", "19" -> {
+            case "11","12","13","14","15",
+                 "16","17","18","19","20",
+                    "21", "22", "23", "24", "25", "26" -> {
+                // спикеры
                 buttons.createSpeakerCard(chatId, messageId, buttonId);
             }
-            case "21", "22", "25" -> {
+            case "30", "31", "32" -> {
                 buttons.sendEditMenu(chatId, messageId);
             }
+            case "35" -> {
+                // КС Цифровая Россия
+                buttons.replyDeleteTable(chatId, messageId, constant.TABLE_NAME_1);
+
+            }
+            case "36" -> {
+                // КС Цифровая Россия
+                buttons.replyDeleteTable(chatId, messageId, constant.TABLE_NAME_2);
+
+            }
+            case "37" -> {
+                // КС СДИ Софт
+                buttons.replyDeleteTable(chatId, messageId, constant.TABLE_NAME_3);
+            }
+            case "111" -> {
+                // все вопросы на пленарном
+                replyPlenary(chatId, messageId);
+            }
+            case "222" -> {
+                // все вопросы ИБ
+                buttons.replySafe(chatId, messageId);
+            }
+            case "333" -> {
+                // все вопросы ИТ
+                buttons.replyTech(chatId, messageId);
+            }
+            case "444" -> {
+                // menu
+                buttons.editMenuModerator(chatId, messageId);
+            }
         }
+    }
+
+    private void replyPlenary (String userId, int messageId) {
+        buttons.replyPlenary(userId, messageId);
+    }
+
+    public void sendMenuModerator(String userId, String messageId) {
+        buttons.createMenuModerator(userId, messageId);
     }
 
 //

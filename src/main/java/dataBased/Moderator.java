@@ -65,4 +65,50 @@ public class Moderator extends DataBased{
         return false;
     }
 
+    @Override
+    public int getCount(String data) {
+        int count = 0;
+
+        try {
+            XSSFWorkbook workbookTemp = new XSSFWorkbook(new FileInputStream(file));
+            XSSFSheet sheetTemp = workbookTemp.getSheet(sheetName);
+
+            count = sheetTemp.getPhysicalNumberOfRows();
+
+            workbookTemp.close();
+
+        } catch (Exception ex) {
+            System.out.println("UserBase: getQuestions");
+        }
+
+        return count;
+    }
+
+    @Override
+    public String[] getDataArray(String data, int ind) {
+        String[] str = new String[ind];
+
+        try {
+            XSSFWorkbook workbookTemp = new XSSFWorkbook(new FileInputStream(file));
+            XSSFSheet sheetTemp = workbookTemp.getSheet(sheetName);
+
+            for (int i = 1; i < sheetTemp.getPhysicalNumberOfRows(); i++) {
+                XSSFRow row = sheetTemp.getRow(i);
+                str[i-1] = row.getCell(0).getStringCellValue();
+            }
+
+            workbookTemp.close();
+
+        } catch (Exception ex) {
+            System.out.println("DataBase: Speaker: getDataArray");
+        }
+
+        return str;
+    }
+
+    @Override
+    public void updateDate(String userId, String tableName, int ind) {
+
+    }
+
 }

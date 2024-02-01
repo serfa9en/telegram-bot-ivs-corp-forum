@@ -25,35 +25,59 @@ public class Constant {
     public  final String SPEAKERS_TECNOLOGY = "6";
     public  final String QUEST_PLENARY = "7";
 
-    public final String QUEST_SPEAKER = "27";
+    public final String QUEST_SPEAKER = "29";
+    // пленарка 33
 
 
 
-    public  final String TABLE_1 = "8";
-    public  final String TABLE_2 = "9";
-    public final String TABLE_3 = "20";
+    public  String TABLE_1 = "8";
+    public  String TABLE_2 = "9";
+    public String TABLE_3 = "10";
+    public String DELETE_TABLE = "";
+    public void setDeleteTable (String id) {
+        this.DELETE_TABLE = id;
+    }
+    public void setDeleteTable1 (String id) {
+        this.TABLE_1 = id;
+    }
+    public void setDeleteTable2 (String id) {
+        this.TABLE_2 = id;
+    }
+    public void setDeleteTable3 (String id) {
+        this.TABLE_3 = id;
+    }
 
-    public final String BACK = "21";
-    public final String MENU = "22";
-    public String SPEAKER_BACK = "23";
+    public final String BACK = "30";
+    public final String MENU = "31";
+    public String SPEAKER_BACK = "27"; //27, 28
 
-    public void setId (String id) {
+    public void setIdBack (String id) {
         this.SPEAKER_BACK = id;
     }
 
-    public final String CANCEL_QUEST = "25";
+    public final String CANCEL_QUEST = "32";
 
     //------------------------------------------------------
 
-    public final String TABLE_NAME_1 = "13:00 - 15:00 — Цифровая Россия";
-    public final String TABLE_NAME_2 = "15:30 - 17:30 — АйТи БАСТИОН";
-    public final String TABLE_NAME_3 = "16:45 – 18:15 — СДИ Софт";
+    public final String TABLE_NAME_1 = "13:00 - 14:30 — Цифровая Россия";
+    public final String TABLE_NAME_2 = "14:30 - 17:30 — АйТи БАСТИОН";
+    public final String TABLE_NAME_3 = "16:45 – 18:00 — СДИ Софт";
 
     //---------------------------------------------------------
     // указать айдишники
+    public String QUESTION_TYPE = "";
+    public void setType (String type) {
+        this.QUESTION_TYPE = type;
+    }
     public String PERSON = "";
     public void setSpeaker (String id) {
         this.PERSON = id;
     }
+
+    //---------------------------------------------------------------------
+    public final String MENU_MODERATOR_PLENARY = "111";
+    public final String MENU_MODERATOR_SAFE = "222";
+    public final String MENU_MODERATOR_TECH = "333";
+    public final String MENU_MODERATOR = "444";
 
 }

@@ -21,8 +21,28 @@ public class Speaker extends DataBased {
     }
 
     @Override
-    public String getData(String userId, int num) {
-        return null;
+    public String getData(String idSpeaker, int num) {
+        String str = "";
+
+        try {
+            XSSFWorkbook workbookTemp = new XSSFWorkbook(new FileInputStream(file));
+            XSSFSheet sheetTemp = workbookTemp.getSheet(sheetName);
+
+            for (int i = 1; i < sheetTemp.getPhysicalNumberOfRows(); i++) {
+                XSSFRow row = sheetTemp.getRow(i);
+                if (row.getCell(6).getStringCellValue().equals(idSpeaker)) {
+                    str = row.getCell(num).getStringCellValue();
+                    break;
+                }
+            }
+
+            workbookTemp.close();
+
+        } catch (Exception ex) {
+            System.out.println("DataBase: Speaker: getData");
+        }
+
+        return str;
     }
 
     @Override
@@ -36,9 +56,11 @@ public class Speaker extends DataBased {
 
             for (int i = 1; i < sheetTemp.getPhysicalNumberOfRows(); i++) {
                 XSSFRow row = sheetTemp.getRow(i);
-                if (row.getCell(0).getStringCellValue().equals(userId)) {
-                    flag = true;
-                    break;
+                if(row.getCell(0) != null) {
+                    if (row.getCell(0).getStringCellValue().equals(userId)) {
+                        flag = true;
+                        break;
+                    }
                 }
             }
 
@@ -64,6 +86,63 @@ public class Speaker extends DataBased {
     @Override
     public boolean checkUser(String userId) {
         return false;
+    }
+
+    @Override
+    public int getCount(String idSection) {
+        int count = 0;
+
+        try {
+            XSSFWorkbook workbookTemp = new XSSFWorkbook(new FileInputStream(file));
+            XSSFSheet sheetTemp = workbookTemp.getSheet(sheetName);
+
+            for (int i = 1; i < sheetTemp.getPhysicalNumberOfRows(); i++) {
+                XSSFRow row = sheetTemp.getRow(i);
+                if (row.getCell(5).getStringCellValue().equals(idSection)) {
+                    count++;
+                }
+            }
+
+            workbookTemp.close();
+
+        } catch (Exception ex) {
+            System.out.println("DataBase: Speaker: getCount");
+        }
+
+        return count;
+    }
+
+    @Override
+    public String[] getDataArray(String idSection, int ind) {
+        String[] str = new String[5];
+        int num = 5;
+
+        try {
+            XSSFWorkbook workbookTemp = new XSSFWorkbook(new FileInputStream(file));
+            XSSFSheet sheetTemp = workbookTemp.getSheet(sheetName);
+
+            for (int i = 1; i < sheetTemp.getPhysicalNumberOfRows(); i++) {
+                XSSFRow row = sheetTemp.getRow(i);
+                if (row.getCell(num).getStringCellValue().equals(idSection) &&
+                    row.getCell(num-1).getStringCellValue().equals(Integer.toString(ind))) {
+                    for(int j = 0; j < str.length; j++) {
+                        str[j] = row.getCell(num + (j + 1)).getStringCellValue();
+                    }
+                }
+            }
+
+            workbookTemp.close();
+
+        } catch (Exception ex) {
+            System.out.println("DataBase: Speaker: getDataArray");
+        }
+
+        return str;
+    }
+
+    @Override
+    public void updateDate(String userId, String tableName, int ind) {
+
     }
 
 

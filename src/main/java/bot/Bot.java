@@ -5,6 +5,9 @@ import com.pengrad.telegrambot.UpdatesListener;
 import com.pengrad.telegrambot.model.CallbackQuery;
 import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.Update;
+import com.pengrad.telegrambot.model.request.InlineKeyboardButton;
+import com.pengrad.telegrambot.model.request.InlineKeyboardMarkup;
+import com.pengrad.telegrambot.model.request.ParseMode;
 import com.pengrad.telegrambot.request.*;
 import properties.Constant;
 
@@ -43,6 +46,7 @@ public class Bot {
             // текст
             if (text != null) {
                 userId = message.chat().id();
+                //test();
 
                 // action.isPerson(userId)
                 // 1 - Admin
@@ -79,7 +83,27 @@ public class Bot {
                     }
                     case 2 -> {
                         // moderator
-                        bot.execute(new SendMessage(userId, "Вы модератор!"));
+                        // bot.execute(new SendMessage(userId, "Вы модератор!"));
+                        switch (text) {
+                            case "/start":
+                            case "/start@itforum_2024_bot":
+                            case "/show_info":
+                            case "/show_info@itforum_2024_bot": {
+                                bot.execute(new SendMessage(userId, "Вы модератор!"));
+                                break;
+                            }
+
+                            case "/menu":
+                            case "/menu@itforum_2024_bot": {
+                                int messageId = update.message().messageId() + 1;
+                                action.sendMenuModerator(userId.toString(), Integer.toString(messageId));
+                                break;
+                            }
+
+                            default: {
+                                action.doDefault(userId.toString());
+                            }
+                        }
                     }
                     case 3 -> {
                         // speaker
@@ -97,7 +121,7 @@ public class Bot {
                                 if (action.checkIs(userId.toString())) {
                                     action.setAction(userId.toString(), constant.USER_FLAGS_DEFAULT);
                                     if (action.checkName(userId.toString())) {
-                                        request = new SendMessage(chatId, action.getCardUser(userId.toString()));
+                                        action.sendCardUser(userId.toString());
                                     } else {
                                         request = (new SendMessage(chatId, constant.REGISTRY));
                                         action.setAction(userId.toString(), constant.USER_FLAGS_REGISTRY);
@@ -151,27 +175,52 @@ public class Bot {
 
     }
 
-//    private void replyAnswerTable (String chatId, int messageId, String tableName) {
-//        InlineKeyboardButton[] inlineButtons = new InlineKeyboardButton[1];
-//        inlineButtons[0] = new InlineKeyboardButton("\uD83D\uDD1A В меню");
-//        inlineButtons[0].callbackData(chatId + "/" + messageId + "/" + constant.MENU);
-//
-//        if (action.notTable(chatId, tableName)) {
-//            action.setUserTable(chatId, tableName);
-//            bot.execute(new EditMessageText(chatId, messageId, "Вы записаны")
-//                    .replyMarkup(
-//                            new InlineKeyboardMarkup(
-//                                    inlineButtons
-//                            )
-//                    ));
-//        } else {
-//            bot.execute(new EditMessageText(chatId, messageId, "Вы записаны")
-//                    .replyMarkup(
-//                            new InlineKeyboardMarkup(
-//                                    inlineButtons
-//                            )
-//                    ));
-//        }
-//    }
+    private void test() {
+        String[] temp = {"1", "2", "3", "2", "2", "5", "2", "3", "4", "5", "5", "4"};
+        String[] arr = new String[0];
+        String[] temp2 = temp;
+        String el = "";
+
+
+        for (int i = 0; i < temp.length; i++) {
+            boolean flag = true;
+            while (flag) {
+                el = temp[i];
+                for (int j = i+1; j < temp.length; j++) {
+                    if (el.equals(temp[j])) {
+                        flag = true;
+                    }
+                }
+                if (flag) {
+                    temp = update(temp, i);
+                } else {
+                    String[] arr2 = arr;
+                    arr = new String[arr.length+1];
+                    for (int j = 0; j < arr2.length; j++) {
+                        arr[j] = arr2[j];
+                    }
+                    arr[arr2.length] = el;
+                    flag = false;
+                }
+            }
+        }
+
+    }
+
+    private void print (String[] temp) {
+        for(int i = 0; i < temp.length; i++) {
+            System.out.print(temp[i] + "  ");
+        }
+        System.out.println();
+    }
+
+    private String[] update (String[] temp, int j) {
+        String[] str = new String[temp.length-1];
+        int index = 0;
+        for (int i = 1; i < temp.length; i++) {
+            
+        }
+        return str;
+    }
 
 }

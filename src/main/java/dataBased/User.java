@@ -27,7 +27,17 @@ public class User extends DataBased{
             if (num == 0) {
                 row = sheetTemp.createRow(sheetTemp.getPhysicalNumberOfRows());
             } else {
-                row = sheetTemp.getRow(sheetTemp.getLastRowNum());
+                int j = 0;
+                for (int i = 0; i < sheetTemp.getPhysicalNumberOfRows(); i++) {
+                    row = sheetTemp.getRow(i);
+                    if (row.getCell(0) != null) {
+                        if (row.getCell(0).getStringCellValue().equals(userId)) {
+                            j = i;
+                            break;
+                        }
+                    }
+                }
+                row = sheetTemp.getRow(j);
             }
             Cell column = row.createCell(num);
             column.setCellValue(text);
@@ -119,6 +129,22 @@ public class User extends DataBased{
             System.out.println("DataBase: User: checkUser");
         }
         return flag;
+    }
+
+    @Override
+    public int getCount(String data) {
+        // кол-во пользователь
+        return 0;
+    }
+
+    @Override
+    public String[] getDataArray(String data, int ind) {
+        return new String[0];
+    }
+
+    @Override
+    public void updateDate(String userId, String tableName, int ind) {
+
     }
 
     // получение значения флага действий
