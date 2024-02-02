@@ -81,8 +81,6 @@ public class Buttons {
         inlineKeyboardButtons3[0] = new InlineKeyboardButton(MENU_TABLE);
         inlineKeyboardButtons3[0].callbackData(userId + "/" + messageId + "/" + constant.MENU_TABLE);
 
-        constant.setDeleteTable("38");
-
         return new InlineKeyboardMarkup(
                 inlineKeyboardButtons0,
                 inlineKeyboardButtons1,
@@ -156,17 +154,10 @@ public class Buttons {
 
     // круглый стол
     public void createTable (String userId, int messageId) {
-        if (constant.DELETE_TABLE.equals("34")) {
-            // удалить
-            constant.setDeleteTable1("35");
-            constant.setDeleteTable2("36");
-            constant.setDeleteTable3("37");
-        } else {
-            // записаться
-            constant.setDeleteTable1("8");
-            constant.setDeleteTable2("9");
-            constant.setDeleteTable3("10");
-        }
+        //System.out.println(constant.DELETE_TABLE);
+        constant.setDeleteTable1("8");
+        constant.setDeleteTable2("9");
+        constant.setDeleteTable3("10");
 
         InlineKeyboardButton[] inlineKeyboardButtons0 = new InlineKeyboardButton[1];
         inlineKeyboardButtons0[0] = new InlineKeyboardButton("Цифровая Россия");
@@ -191,28 +182,44 @@ public class Buttons {
                 inlineKeyboardButtons3
         );
 
-        bot.execute(new EditMessageText (userId, messageId, "\uD83D\uDCCD <b>КРУГЛЫЕ СТОЛЫ</b>\n" +
-                "\n" +
-                "\uD83D\uDCCE <b>" + constant.TABLE_NAME_1 + "</b>\n" +
-                "<i><b>Зал Edison</b></i>\n" +
-                "    • Депутат Государственной Думы, координатор федерального партпроекта «Цифровая Россия» Немкин А.И.; \n" +
-                "    • Генеральный директор фонда «Цифровая Долина Прикамья», руководитель федерального штаба партийного проекта «Цифровая Россия» Ландарь А.С.\n" +
-                "    • Министр ЦР Республики Калмыкия Этеев А.П.\n" +
-                "    • Министр ЦР, ИТ и связей Рязанской области Ульянов А.Ю. \n" +
-                "    • Министр ЦР и информационно-коммуникационных технологий Новгородской области Киблер М.В.\n" +
-                "    • Руководитель направления развития Ассоциации социальных предпринимателей Астраханской области Махринский С.В.\n" +
-                "\n" +
-                "\uD83D\uDCCE <b>" + constant.TABLE_NAME_2 + "</b>\n" +
-                "<i><b>Зал Edison</b></i>\n" +
-                "«АйТи Бастион» — производитель системы контроля действий поставщиков ИТ-услуг СКДПУ НТ." +
-                "Компания занимает более 50% российского рынка PAM-решений (Privileged Access Management). " +
-                "СКДПУ НТ является единственной на данный момент PAM-системой, сертифицированной ФСТЭК России. " +
-                "Отечественный разработчик решений в области информационной безопасности.\n" +
-                "\n" +
-                "\uD83D\uDCCE <b>" + constant.TABLE_NAME_3 + "</b>\n" +
-                "<i><b>Зал 'Информационная безопасность'</b></i>\n" +
-                "Основа надежного и рационального управления ЦОДом\n" +
-                "\n"
+        bot.execute(new EditMessageText (userId, messageId,
+                "\uD83D\uDCCD <b>ЗАПИСАТЬСЯ НА КРУГЛЫЙ СТОЛ</b>\n" +
+                        constant.TEXT_TABLE
+                + getUserTables(userId)).parseMode(ParseMode.HTML)
+                .replyMarkup(inlineKeyboard));
+    }
+
+    public void createDeleteTable (String userId, int messageId) {
+        constant.setDeleteTable1("35");
+        constant.setDeleteTable2("36");
+        constant.setDeleteTable3("37");
+
+        InlineKeyboardButton[] inlineKeyboardButtons0 = new InlineKeyboardButton[1];
+        inlineKeyboardButtons0[0] = new InlineKeyboardButton("Цифровая Россия");
+        inlineKeyboardButtons0[0].callbackData(userId + "/" + messageId + "/" + constant.TABLE_1);
+
+        InlineKeyboardButton[] inlineKeyboardButtons1 = new InlineKeyboardButton[1];
+        inlineKeyboardButtons1[0] = new InlineKeyboardButton("АйТи БАСТИОН");
+        inlineKeyboardButtons1[0].callbackData(userId + "/" + messageId + "/" + constant.TABLE_2);
+
+        InlineKeyboardButton[] inlineKeyboardButtons2 = new InlineKeyboardButton[1];
+        inlineKeyboardButtons2[0] = new InlineKeyboardButton("СДИ Софт");
+        inlineKeyboardButtons2[0].callbackData(userId + "/" + messageId + "/" + constant.TABLE_3);
+
+        InlineKeyboardButton[] inlineKeyboardButtons3 = new InlineKeyboardButton[1];
+        inlineKeyboardButtons3[0] = new InlineKeyboardButton(BACK);
+        inlineKeyboardButtons3[0].callbackData(userId + "/" + messageId + "/" + constant.BACK);
+
+        InlineKeyboardMarkup inlineKeyboard = new InlineKeyboardMarkup(
+                inlineKeyboardButtons0,
+                inlineKeyboardButtons1,
+                inlineKeyboardButtons2,
+                inlineKeyboardButtons3
+        );
+
+        bot.execute(new EditMessageText (userId, messageId,
+                "\uD83D\uDCCD <b>УДАЛИТЬ ЗАПИСЬ НА КРУГЛЫЙ СТОЛ</b>\n" +
+                        constant.TEXT_TABLE
                 + getUserTables(userId)).parseMode(ParseMode.HTML)
                 .replyMarkup(inlineKeyboard));
     }
@@ -232,6 +239,22 @@ public class Buttons {
         inlineButtons[0] = new InlineKeyboardButton(MENU);
         inlineButtons[0].callbackData(chatId + "/" + messageId + "/" + constant.MENU);
 
+        if(isTable(chatId,tableName)) {
+            // если такой стол у такого пользователя уже есть
+            if (isTrue(chatId, tableName)) {
+                // если пользователь записан на этот стол (флаг 1)
+
+            } else {
+                // если пользователь не записан на этот стол (флаг 0)
+                String flag = tableName + "/" + "1";
+                table.setFlag(chatId, flag);
+            }
+        } else {
+            // если такого стола у такого пользователя ещё нет
+            table.setData(chatId, tableName, 1);
+        }
+
+        /*
         if (trueTable(chatId, tableName).equals("0")) {
             table.setData(chatId, tableName, 1);
         }
@@ -239,6 +262,8 @@ public class Buttons {
             String flag = tableName + "/" + "1";
             table.setFlag(chatId, flag);
         }
+
+         */
 
         bot.execute(new EditMessageText(chatId, messageId, "Вы записаны")
                 .replyMarkup(
@@ -253,11 +278,29 @@ public class Buttons {
         inlineButtons[0] = new InlineKeyboardButton(MENU);
         inlineButtons[0].callbackData(chatId + "/" + messageId + "/" + constant.MENU);
 
+        if(isTable(chatId,tableName)) {
+            // если такой стол у такого пользователя уже есть
+            if (isTrue(chatId, tableName)) {
+                // если пользователь записан на этот стол (флаг 1)
+                String flag = tableName + "/" + "0";
+                table.setFlag(chatId, flag);
+            } else {
+                // если пользователь не записан на этот стол (флаг 0)
+
+            }
+        } else {
+            // если такого стола у такого пользователя ещё нет
+            table.setData(chatId, tableName, 0);
+        }
+
+        /*
         if (trueTable(chatId, tableName).equals("0")) {
             String flag = tableName + "/" + "0";
             table.setFlag(chatId, flag);
             // table.setData(chatId, tableName, 1);
         }
+
+         */
 
         bot.execute(new EditMessageText(chatId, messageId, "Вы удалили запись")
                 .replyMarkup(
@@ -265,6 +308,48 @@ public class Buttons {
                                 inlineButtons
                         )
                 ));
+    }
+
+    public boolean isTable (String userId, String text) {
+        String[] tbTemp = table.getDataArray(userId, 10);
+
+        boolean flag = false;
+        for(int i = 0; i < tbTemp.length; i++) {
+            if (tbTemp[i].equals(text)) {
+                flag = true;
+            }
+        }
+
+        /*
+        for (int i = 0; i < tbTemp.length; i++) {
+            System.out.println(tbTemp[i]);
+        }
+        System.out.println();
+
+         */
+
+        return flag;
+    }
+
+    public boolean isTrue (String userId, String text) {
+        String[] tbTemp = table.getDataArray(userId, 1);
+
+        boolean flag = false;
+        for(int i = 0; i < tbTemp.length; i++) {
+            if (tbTemp[i].equals(text)) {
+                flag = true;
+            }
+        }
+
+        /*
+        for (int i = 0; i < tbTemp.length; i++) {
+            System.out.println(tbTemp[i]);
+        }
+        System.out.println();
+
+         */
+
+        return flag;
     }
 
     public String trueTable (String userId, String text) {
@@ -465,9 +550,9 @@ public class Buttons {
     public InlineKeyboardMarkup getButtonsCardUser (String userId, int messageId) {
         InlineKeyboardButton[] inlineKeyboardButtons = new InlineKeyboardButton[1];
         inlineKeyboardButtons[0] = new InlineKeyboardButton("Удалить запись на круглый стол");
-        inlineKeyboardButtons[0].callbackData(userId + "/" + messageId + "/" + constant.MENU_TABLE);
+        inlineKeyboardButtons[0].callbackData(userId + "/" + messageId + "/" + constant.DELETE_TABLE_MENU);
 
-        constant.setDeleteTable("34");
+        //constant.setDeleteTable("34");
 
         return new InlineKeyboardMarkup(inlineKeyboardButtons);
     }

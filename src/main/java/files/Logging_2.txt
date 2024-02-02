@@ -1,0 +1,72 @@
+﻿DataBase: User: setData (1725475132 - Кольцов Вячеслав Николаевич
+ООО МГМ, Мотовилиха гражданское машиностроение - 4)
+DataBase: User: setFlag
+DataBase: User: setData (966003639 - 966003639 - 0)
+DataBase: User: setData (966003639 - Роза - 1)
+DataBase: User: setData (966003639 - Илькаева - 2)
+DataBase: User: setData (966003639 - roza_lika - 3)
+DataBase: User: setData (966003639 -  - 4)
+DataBase: User: setData (966003639 -  - 5)
+DataBase: User: setFlag
+
+[пт февр. 02 10:32:17 YEKT 2024]:304283509[Ivan/D/]:sendText[Дятлов Иван
+Конфидент]
+[пт февр. 02 10:32:18 YEKT 2024]:703561801[//]:sendText[/start]
+[пт февр. 02 10:32:22 YEKT 2024]:304283509[Ivan/D/]:sendText[/menu]
+[пт февр. 02 10:32:23 YEKT 2024]:703561801[Михаил/Шилоносов/]:sendText[/menu]
+[пт февр. 02 10:32:24 YEKT 2024]:703561801[Михаил/Шилоносов/]:sendText[/show_info]
+[пт февр. 02 10:32:25 YEKT 2024]:674723828[Maria/Belyaeva/belyaevaMar]:sendText[/show_info]
+[пт февр. 02 10:32:45 YEKT 2024]:703561801[Михаил/Шилоносов/]:sendText[/start]
+[пт февр. 02 10:32:46 YEKT 2024]:283787068[//]:sendText[/menu]
+[пт февр. 02 10:32:46 YEKT 2024]:283787068[//]:clickButton[/]
+[пт февр. 02 10:32:46 YEKT 2024]:283787068[//]:sendText[/show_info]
+[пт февр. 02 10:32:47 YEKT 2024]:283787068[//]:sendText[/menu]
+[пт февр. 02 10:32:47 YEKT 2024]:283787068[//]:sendText[/menu]
+[пт февр. 02 10:32:48 YEKT 2024]:233200350[//]:clickButton[/]
+[пт февр. 02 10:32:48 YEKT 2024]:304283509[Ivan/D/]:sendText[/menu]
+[пт февр. 02 10:32:49 YEKT 2024]:304283509[Ivan/D/]:sendText[/menu]
+[пт февр. 02 10:32:50 YEKT 2024]:304283509[Ivan/D/]:sendText[/menu]
+[пт февр. 02 10:32:50 YEKT 2024]:304283509[Ivan/D/]:sendText[/menu]
+[пт февр. 02 10:32:51 YEKT 2024]:304283509[Ivan/D/]:sendText[/show_info]
+[пт февр. 02 10:37:59 YEKT 2024]:1725475132[//]:sendText[/start]
+[пт февр. 02 10:39:01 YEKT 2024]:1725475132[Вячеслав//]:sendText[Кольцов Вячеслав Николаевич
+ООО МГМ, Мотовилиха гражданское машиностроение]
+[пт февр. 02 10:39:42 YEKT 2024]:674723828[Maria/Belyaeva/belyaevaMar]:sendText[/show_info]
+[пт февр. 02 10:43:29 YEKT 2024]:674723828[Maria/Belyaeva/belyaevaMar]:sendText[/show_info]
+[пт февр. 02 10:44:25 YEKT 2024]:966003639[//]:sendText[/start]
+[пт февр. 02 10:45:10 YEKT 2024]:966003639[//]:sendText[Илькаева Розалия Маратовна
+ГБУ ПК "ЦИР ПК"]
+[пт февр. 02 10:45:29 YEKT 2024]:674723828[Maria/Belyaeva/belyaevaMar]:sendText[/show_info]
+[пт февр. 02 10:50:19 YEKT 2024]:758433897[//]:sendText[/start]
+[пт февр. 02 10:50:23 YEKT 2024]:758433897[Ruslan/Istomin IT Gravity-group/ruslanistomin]:sendText[/start]
+[пт февр. 02 10:50:44 YEKT 2024]:502309870[//]:clickButton[/]
+[пт февр. 02 10:50:45 YEKT 2024]:162182886[//]:sendText[/start]
+[пт февр. 02 10:50:48 YEKT 2024]:502309870[//]:clickButton[/]
+[пт февр. 02 10:50:48 YEKT 2024]:162182886[Sergey/Podvintsev/sergey_podvintsev]:sendText[/show_info]
+[пт февр. 02 10:50:56 YEKT 2024]:502309870[//]:clickButton[/]
+[пт февр. 02 10:50:57 YEKT 2024]:674723828[Maria/Belyaeva/belyaevaMar]:sendText[/show_info]
+[пт февр. 02 10:51:04 YEKT 2024]:502309870[//]:clickButton[/]
+[пт февр. 02 10:51:25 YEKT 2024]:502309870[//]:clickButton[/]
+[пт февр. 02 10:51:26 YEKT 2024]:758433897[Ruslan/Istomin IT Gravity-group/ruslanistomin]:sendText[Истомин Руслан Аркадьевич,
+ООО «Гравити-групп»]
+[пт февр. 02 10:52:15 YEKT 2024]:502309870[//]:clickButton[/]
+[пт февр. 02 10:52:16 YEKT 2024]:758433897[Ruslan/Istomin IT Gravity-group/ruslanistomin]:sendText[Истомин Руслан Аркадьевич,
+ООО «Гравити-групп»]
+[пт февр. 02 10:52:18 YEKT 2024]:162182886[Sergey/Podvintsev/sergey_podvintsev]:sendText[Подвинцев Сергей Сергеевич
+ГБПОУ ПМК]
+[пт февр. 02 10:52:23 YEKT 2024]:667711564[Tanya/Podvintseva/TatyanaPodvintseva]:sendText[Подвинцева Татьяна Сергеевна
+ГБПОУ ПМК]
+[пт февр. 02 10:52:24 YEKT 2024]:667711564[Tanya/Podvintseva/TatyanaPodvintseva]:sendText[/menu]
+[пт февр. 02 10:53:03 YEKT 2024]:162182886[Sergey/Podvintsev/sergey_podvintsev]:sendText[/menu]
+[пт февр. 02 10:53:14 YEKT 2024]:674723828[Maria/Belyaeva/belyaevaMar]:sendText[/show_info]
+[пт февр. 02 10:55:51 YEKT 2024]:884713478[//]:sendText[/start]
+[пт февр. 02 10:57:54 YEKT 2024]:674723828[Maria/Belyaeva/belyaevaMar]:sendText[/show_info]
+[пт февр. 02 10:58:29 YEKT 2024]:162182886[Sergey/Podvintsev/sergey_podvintsev]:clickButton[Досье спикеров/]
+[пт февр. 02 10:59:30 YEKT 2024]:884713478[Oksana/Pospelova/OksanaPospelova]:sendText[Поспелова Оксана Сергеевна]
+[пт февр. 02 10:59:43 YEKT 2024]:884713478[Oksana/Pospelova/OksanaPospelova]:sendText[АО СОФТЛАЙН]
+[пт февр. 02 11:01:21 YEKT 2024]:990692561[//]:sendText[/start]
+
+
+
+DataBase: User: setData (990692561 - Марьин Алексей Сергеевич ООО ЦПР Европейский - 4)
+DataBase: User: setFlag

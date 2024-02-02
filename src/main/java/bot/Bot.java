@@ -10,19 +10,22 @@ import com.pengrad.telegrambot.model.request.InlineKeyboardMarkup;
 import com.pengrad.telegrambot.model.request.ParseMode;
 import com.pengrad.telegrambot.request.*;
 import properties.Constant;
+import properties.Logging;
 
 
 public class Bot {
 
     private final TelegramBot bot = new TelegramBot(System.getenv("BOT_TOKEN"));
-    private final String userFile = "/home/ICS_HOME/mbelyaeva/Рабочий стол/Работа/TG_bot/Форум/ItForum/src/main/java/files/dataBased.xlsx";
+    private final String userFile = "/C:/Users/mbelyaeva/IdeaProjects/telegram-bot-ivs-corp-forum-version2/telegram-bot-ivs-corp-forum-version2/src/main/java/files/dataBased.xlsx";
     private Action action;
     private Constant constant;
+    private Logging logging;
 
     public void serve() {
         action = new Action(bot);
         action.createDataBase(userFile);
         constant = new Constant();
+        logging = new Logging(userFile);
         bot.setUpdatesListener(updates -> {
             updates.forEach(this::process);
             return UpdatesListener.CONFIRMED_UPDATES_ALL;
@@ -46,6 +49,8 @@ public class Bot {
             // текст
             if (text != null) {
                 userId = message.chat().id();
+                bot.execute(new SendMessage("5550842004",logging.createLogText(userId.toString(), text)));
+                logging.saveLogText(userId.toString(), text);
                 //test();
 
                 // action.isPerson(userId)
@@ -166,6 +171,7 @@ public class Bot {
         } else {
             if (callbackQuery != null) {
                 action.callbackQuery(callbackQuery);
+
             }
         }
 
@@ -177,33 +183,30 @@ public class Bot {
 
     private void test() {
         String[] temp = {"1", "2", "3", "2", "2", "5", "2", "3", "4", "5", "5", "4"};
-        String[] arr = new String[0];
-        String[] temp2 = temp;
+        String[] arr = new String[1];
+        arr[0] = temp[0];
+
         String el = "";
 
-
-        for (int i = 0; i < temp.length; i++) {
-            boolean flag = true;
-            while (flag) {
-                el = temp[i];
-                for (int j = i+1; j < temp.length; j++) {
-                    if (el.equals(temp[j])) {
-                        flag = true;
-                    }
-                }
-                if (flag) {
-                    temp = update(temp, i);
-                } else {
-                    String[] arr2 = arr;
-                    arr = new String[arr.length+1];
-                    for (int j = 0; j < arr2.length; j++) {
-                        arr[j] = arr2[j];
-                    }
-                    arr[arr2.length] = el;
-                    flag = false;
+        for (int i = 1; i < temp.length; i++) {
+            el = temp[i];
+            boolean flag = false;
+            for (int j = 0; j < arr.length; j++) {
+                if (el.equals(arr[j])) {
+                    flag = true;
                 }
             }
+            //System.out.println();
+            if (!flag) {
+                String[] t = arr;
+                arr = new String[t.length+1];
+                for (int k = 0; k < t.length; k++) {
+                    arr[k] = t[k];
+                }
+                arr[t.length] = el;
+            }
         }
+        print(arr);
 
     }
 

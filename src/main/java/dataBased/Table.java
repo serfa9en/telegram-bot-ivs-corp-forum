@@ -210,7 +210,11 @@ public class Table extends DataBased{
             for (int i = 1; i < sheetTemp.getPhysicalNumberOfRows(); i++) {
                 XSSFRow row = sheetTemp.getRow(i);
                 if (row.getCell(0).getStringCellValue().equals(data)) {
-                    if (row.getCell(2).getStringCellValue().equals(Integer.toString(count))) {
+                    if (count != 10) {
+                        if (row.getCell(2).getStringCellValue().equals(Integer.toString(count))) {
+                            countTemp++;
+                        }
+                    } else {
                         countTemp++;
                     }
                 }
@@ -221,7 +225,12 @@ public class Table extends DataBased{
             for (int i = 1; i < sheetTemp.getPhysicalNumberOfRows(); i++) {
                 XSSFRow row = sheetTemp.getRow(i);
                 if (row.getCell(0).getStringCellValue().equals(data)) {
-                    if (row.getCell(2).getStringCellValue().equals(Integer.toString(count))) {
+                    if (count != 10) {
+                        if (row.getCell(2).getStringCellValue().equals(Integer.toString(count))) {
+                            str[ii] = row.getCell(1).getStringCellValue();
+                            ii++;
+                        }
+                    } else {
                         str[ii] = row.getCell(1).getStringCellValue();
                         ii++;
                     }

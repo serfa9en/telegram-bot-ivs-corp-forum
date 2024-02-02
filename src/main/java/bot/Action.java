@@ -11,6 +11,7 @@ import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
 import properties.Buttons;
 import properties.Constant;
+import properties.Logging;
 
 public class Action {
     private TelegramBot bot;
@@ -22,6 +23,7 @@ public class Action {
 
     private DataBased questions;
     private DataBased tables;
+    private Logging logging;
 
     Buttons buttons;
     Constant constant = new Constant();
@@ -45,6 +47,7 @@ public class Action {
         questions = new Question(fileUser);
         tables = new Table(fileUser);
         buttons.setFile(fileUser);
+        logging= new Logging(fileUser);
     }
 
     public boolean checkIs (String userId) {
@@ -151,22 +154,40 @@ public class Action {
         int messageId = Integer.parseInt(data[1]);
         String buttonId = data[2];
 
+        String question = "";
+
         switch (buttonId) {
             case "2","27" -> {
                 // досье спикеров
                 buttons.createSpeakers(chatId,messageId);
+                question = "Досье спикеров";
             }
             case "3", "28" -> {
                 // задать вопрос из меню
                 buttons.createQuest(chatId,messageId);
+                question = "Задать вопрос из меню";
             }
             case "4" -> {
                 // записаться на круглый стол
+                constant.setDeleteTable("38");
                 buttons.createTable(chatId,messageId);
+                question = "Записаться на круглый стол";
+            }
+            case "38" -> {
+                // удалиться с круглого стола
+                constant.setDeleteTable("34");
+                buttons.createDeleteTable(chatId,messageId);
+                question = "Удалиться с круглого стола";
             }
             case "5", "6" -> {
                 // выбрана секция
                 buttons.createButtonsSpeakers(chatId,messageId,buttonId);
+                question = "Выбрана секция";
+                if (buttonId.equals("5")) {
+                    question += "БЕЗОПАСНОСТЬ";
+                } else {
+                    question += "ТЕХНОЛОГИИ";
+                }
             }
 
             case "7","29" -> {
@@ -174,62 +195,73 @@ public class Action {
                 //constant.setSpeaker("26");
                 setAction(chatId, constant.USER_FLAGS_QUESTION_PLENARY);
                 buttons.createAskQuestion(chatId, messageId);
+                question = "Задать вопрос на пленарном";
             }
 
             case "8" -> {
                 // КС Цифровая Россия
                 buttons.replyAnswerTable(chatId, messageId, constant.TABLE_NAME_1);
-
+                question = "КС Цифровая Россия";
             }
             case "9" -> {
                 // КС Цифровая Россия
                 buttons.replyAnswerTable(chatId, messageId, constant.TABLE_NAME_2);
-
+                question = "АйТи БАСТИОН";
             }
             case "10" -> {
                 // КС СДИ Софт
                 buttons.replyAnswerTable(chatId, messageId, constant.TABLE_NAME_3);
+                question = "СДИ Софт";
             }
             case "11","12","13","14","15",
                  "16","17","18","19","20",
                     "21", "22", "23", "24", "25", "26" -> {
                 // спикеры
                 buttons.createSpeakerCard(chatId, messageId, buttonId);
+                question = createSpeaker(buttonId);
             }
             case "30", "31", "32" -> {
                 buttons.sendEditMenu(chatId, messageId);
+                question = "В меню";
             }
             case "35" -> {
                 // КС Цифровая Россия
                 buttons.replyDeleteTable(chatId, messageId, constant.TABLE_NAME_1);
-
+                question = "КС Цифровая Россия";
             }
             case "36" -> {
                 // КС Цифровая Россия
                 buttons.replyDeleteTable(chatId, messageId, constant.TABLE_NAME_2);
-
+                question = "АйТи БАСТИОН";
             }
             case "37" -> {
                 // КС СДИ Софт
                 buttons.replyDeleteTable(chatId, messageId, constant.TABLE_NAME_3);
+                question = "СДИ Софт";
             }
             case "111" -> {
                 // все вопросы на пленарном
                 replyPlenary(chatId, messageId);
+                question = "Модератор - пленарное";
             }
             case "222" -> {
                 // все вопросы ИБ
                 buttons.replySafe(chatId, messageId);
+                question = "Модератор - ИБ";
             }
             case "333" -> {
                 // все вопросы ИТ
                 buttons.replyTech(chatId, messageId);
+                question = "Модератор - ИТ";
             }
             case "444" -> {
                 // menu
                 buttons.editMenuModerator(chatId, messageId);
+                question = "Модератор - В меню";
             }
         }
+
+        logging.saveLogButton(chatId,question);
     }
 
     private void replyPlenary (String userId, int messageId) {
@@ -238,6 +270,22 @@ public class Action {
 
     public void sendMenuModerator(String userId, String messageId) {
         buttons.createMenuModerator(userId, messageId);
+    }
+
+    private String createSpeaker (String btnId) {
+        /*  "11","12","13","14","15",
+                 "16","17","18","19","20",
+                    "21", "22", "23", "24", "25", "26"
+
+         */
+
+        switch (btnId) {
+            case "11" -> {
+                return "11";
+            }
+        }
+
+        return "Name";
     }
 
 //
