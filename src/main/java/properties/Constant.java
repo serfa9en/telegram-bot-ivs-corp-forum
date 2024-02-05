@@ -81,6 +81,16 @@ public class Constant {
     public final String MENU_MODERATOR_TECH = "333";
     public final String MENU_MODERATOR = "444";
 
+    public final String MENU_SEND_SEND = "555";
+
+    public final String MODERATOR_SENT_TEXT = "666";
+    public final String MODERATOR_SENT_PIC_TEXT = "888";
+    public final String MODERATOR_SENT_PIC = "777";
+    public final String MODERATOR_FLAG_TEXT = "1";
+    public final String MODERATOR_FLAG_PIC = "2";
+    public final String MODERATOR_FLAG_PIC_TEXT = "3";
+    public final String MODERATOR_FLAG_DEFAULT = "0";
+
 
     public final String TEXT_TABLE =
             "\n" +

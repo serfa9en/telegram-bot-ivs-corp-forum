@@ -53,6 +53,7 @@ public class Buttons {
 
 
     public void createMenu(String userId, int messageId) {
+        System.out.println("buttons menu");
         bot.execute(new SendMessage(userId, "Главное меню:")
                 .replyMarkup(createMenuButtons(userId, messageId)));
     }
@@ -575,12 +576,17 @@ public class Buttons {
         inlineKeyboardButtons3[0] = new InlineKeyboardButton(SPEAKERS_SECTIONS[1]);
         inlineKeyboardButtons3[0].callbackData(userId + "/" + messageId + "/" + constant.MENU_MODERATOR_TECH);
 
+        InlineKeyboardButton[] inlineKeyboardButtons4 = new InlineKeyboardButton[1];
+        inlineKeyboardButtons4[0] = new InlineKeyboardButton("Рассылка");
+        inlineKeyboardButtons4[0].callbackData(userId + "/" + messageId + "/" + constant.MENU_SEND_SEND);
+
 
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup(
                 inlineKeyboardButtons0,
                 inlineKeyboardButtons1,
                 inlineKeyboardButtons2,
-                inlineKeyboardButtons3
+                inlineKeyboardButtons3,
+                inlineKeyboardButtons4
         );
 
         bot.execute(new SendMessage(userId, "Главное меню:")
@@ -605,11 +611,16 @@ public class Buttons {
         inlineKeyboardButtons3[0] = new InlineKeyboardButton(SPEAKERS_SECTIONS[1]);
         inlineKeyboardButtons3[0].callbackData(userId + "/" + messageId + "/" + constant.MENU_MODERATOR_TECH);
 
+        InlineKeyboardButton[] inlineKeyboardButtons4 = new InlineKeyboardButton[1];
+        inlineKeyboardButtons4[0] = new InlineKeyboardButton("Рассылка");
+        inlineKeyboardButtons4[0].callbackData(userId + "/" + messageId + "/" + constant.MENU_SEND_SEND);
+
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup(
                 inlineKeyboardButtons0,
                 inlineKeyboardButtons1,
                 inlineKeyboardButtons2,
-                inlineKeyboardButtons3
+                inlineKeyboardButtons3,
+                inlineKeyboardButtons4
         );
 
         bot.execute(new EditMessageText(userId, messageId, "Главное меню:")
@@ -677,5 +688,61 @@ public class Buttons {
                                 inlineButtons
                         )
                 ));
+    }
+
+    public void sendSend (String userId, int messageId) {
+        InlineKeyboardButton[] inlineButtons0 = new InlineKeyboardButton[1];
+        inlineButtons0[0] = new InlineKeyboardButton("Только текст");
+        inlineButtons0[0].callbackData(userId + "/" + messageId + "/" + constant.MODERATOR_SENT_TEXT);
+
+        InlineKeyboardButton[] inlineButtons1 = new InlineKeyboardButton[1];
+        inlineButtons1[0] = new InlineKeyboardButton("Картинка + текст");
+        inlineButtons1[0].callbackData(userId + "/" + messageId + "/" + constant.MODERATOR_SENT_PIC_TEXT);
+
+        InlineKeyboardButton[] inlineButtons2 = new InlineKeyboardButton[1];
+        inlineButtons2[0] = new InlineKeyboardButton("Картинка");
+        inlineButtons2[0].callbackData(userId + "/" + messageId + "/" + constant.MODERATOR_SENT_PIC);
+
+        String str = "\uD83D\uDCCC <b>ВЫБЕРИТЕ ТИП СООБЩЕНИЯ</b>\n\n";
+
+        bot.execute(new EditMessageText(userId, messageId, str)
+                .parseMode(ParseMode.HTML)
+                .replyMarkup(
+                        new InlineKeyboardMarkup(
+                                inlineButtons0,
+                                inlineButtons1,
+                                inlineButtons2
+                        )
+                ));
+    }
+
+    public void sendText (String userId, int messageId) {
+        moderator.setFlag(userId, constant.MODERATOR_FLAG_TEXT);
+
+        String str = "<b>Отправьте мне свой текст \uD83D\uDC47 : </b>";
+
+        bot.execute(new EditMessageText(userId, messageId, str)
+                .parseMode(ParseMode.HTML)
+                );
+    }
+
+    public void sendPicText (String userId, int messageId) {
+        moderator.setFlag(userId, constant.MODERATOR_FLAG_PIC_TEXT);
+
+        String str = "<b>Отправьте мне картинку с текстом \uD83D\uDC47 : </b>";
+
+        bot.execute(new EditMessageText(userId, messageId, str)
+                .parseMode(ParseMode.HTML)
+        );
+    }
+
+    public void sendPic (String userId, int messageId) {
+        moderator.setFlag(userId, constant.MODERATOR_FLAG_PIC);
+
+        String str = "<b>Отправьте мне картинку \uD83D\uDC47 : </b>";
+
+        bot.execute(new EditMessageText(userId, messageId, str)
+                .parseMode(ParseMode.HTML)
+        );
     }
 }

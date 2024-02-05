@@ -5,6 +5,7 @@ import com.pengrad.telegrambot.model.request.InlineKeyboardButton;
 import com.pengrad.telegrambot.model.request.InlineKeyboardMarkup;
 import com.pengrad.telegrambot.model.request.ParseMode;
 import com.pengrad.telegrambot.request.EditMessageText;
+import com.pengrad.telegrambot.request.SendPhoto;
 import dataBased.*;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.model.Update;
@@ -87,6 +88,10 @@ public class Action {
         userDB.setFlag(userId, flag);
     }
 
+    public void setActionModerator(String userId, String flag) {
+        moderatorDB.setFlag(userId, flag);
+    }
+
     public boolean checkName(String userId) {
         return userDB.checkUser(userId);
     }
@@ -104,6 +109,102 @@ public class Action {
             buttons.askQuestion(userId);
             // System.out.println("HH");
         }
+    }
+
+    public void doDefaultModerator(String userId) {
+        if (moderatorDB.getFlag(userId).equals(constant.MODERATOR_FLAG_TEXT)) {
+            // text
+            sendMessage(userId);
+        }
+
+        if (moderatorDB.getFlag(userId).equals(constant.MODERATOR_FLAG_PIC)) {
+            //pic
+            sendPicture(userId);
+        }
+
+        if (moderatorDB.getFlag(userId).equals(constant.MODERATOR_FLAG_PIC_TEXT)) {
+            //pic text
+            sendPictureCaption(userId);
+        }
+    }
+
+    public void sendMessage(String userId) {
+        /*
+        String[] users = userDB.getUsers();
+        for (int i = 0; i < users.length; i++) {
+            bot.execute(new SendMessage(users[i], update.message().text()));
+        }
+        setActionAdmin(userId, constant.ADMIN_FLAGS_DEFAULT);
+         */
+        String[] usr = userDB.getDataArray("",0);
+        for (int i = 0; i < usr.length; i++) {
+            bot.execute(new SendMessage(usr[i], update.message().text()));
+        }
+        setActionModerator(userId, constant.MODERATOR_FLAG_DEFAULT);
+
+    }
+
+    private void sendPicture(String userId) {
+        /*
+        String[] users = userDB.getUsers();
+        Object obj;
+        for (int i = 0; i < users.length; i++) {
+            obj = users[i];
+            bot.execute(new SendPhoto(obj, update.message().photo()[0].fileId()));
+        }
+        setActionAdmin(userId, constant.ADMIN_FLAGS_DEFAULT);
+
+
+        //bot.execute(new SendMessage("674723828", update.message().text()));
+        Object obj = "674723828";
+        bot.execute(new SendPhoto(obj, update.message().photo()[0].fileId()));
+        setActionModerator(userId, constant.MODERATOR_FLAG_DEFAULT);
+
+         */
+        if (update.message().photo() != null) {
+            String[] usr = userDB.getDataArray("",0);
+            for (int i = 0; i < usr.length; i++) {
+                Object obj = usr[i];
+                bot.execute(new SendPhoto(obj, update.message().photo()[0].fileId()));
+            }
+        }
+        setActionModerator(userId, constant.MODERATOR_FLAG_DEFAULT);
+    }
+
+    private void sendPictureCaption(String userId) {
+        /*
+        String[] users = userDB.getUsers();
+        Object obj;
+        for (int i = 0; i < users.length; i++) {
+            obj = users[i];
+            bot.execute(new SendPhoto(obj, update.message().photo()[0].fileId())
+                    .caption(update.message().caption()));
+        }
+        setActionAdmin(userId, constant.ADMIN_FLAGS_DEFAULT);
+
+
+        Object obj = "674723828";
+        bot.execute(new SendPhoto(obj, update.message().photo()[0].fileId())
+                .caption(update.message().caption()));
+        setActionModerator(userId, constant.MODERATOR_FLAG_DEFAULT);
+
+         */
+
+        if (update.message().photo() != null) {
+            String[] usr = userDB.getDataArray("",0);
+            for (int i = 0; i < usr.length; i++) {
+                Object obj = usr[i];
+
+                if (update.message().caption() != null) {
+                    bot.execute(new SendPhoto(obj, update.message().photo()[0].fileId())
+                            .caption(update.message().caption()));
+                } else {
+                    bot.execute(new SendPhoto(obj, update.message().photo()[0].fileId())
+                            .caption(""));
+                }
+            }
+        }
+        setActionModerator(userId, constant.MODERATOR_FLAG_DEFAULT);
     }
 
     // добавляем ФИО
@@ -157,8 +258,12 @@ public class Action {
         String question = "";
 
         switch (buttonId) {
+            case "1" -> {
+                question = "Открыл программу";
+            }
             case "2","27" -> {
                 // досье спикеров
+                System.out.println("досье");
                 buttons.createSpeakers(chatId,messageId);
                 question = "Досье спикеров";
             }
@@ -215,12 +320,17 @@ public class Action {
             }
             case "11","12","13","14","15",
                  "16","17","18","19","20",
-                    "21", "22", "23", "24", "25", "26" -> {
+                    "21", "22", "23", "24", "25", "26", "40" -> {
                 // спикеры
                 buttons.createSpeakerCard(chatId, messageId, buttonId);
                 question = createSpeaker(buttonId);
             }
-            case "30", "31", "32" -> {
+            case "30", "31" -> {
+                buttons.sendEditMenu(chatId, messageId);
+                question = "В меню";
+            }
+            case "32" -> {
+                //setAction(chatId, constant.USER_FLAGS_QUESTION_PLENARY);
                 buttons.sendEditMenu(chatId, messageId);
                 question = "В меню";
             }
@@ -259,9 +369,33 @@ public class Action {
                 buttons.editMenuModerator(chatId, messageId);
                 question = "Модератор - В меню";
             }
+            case "555" -> {
+                // menu
+                buttons.sendSend(chatId, messageId);
+                question = "Модератор - Рассылка";
+            }
+
+            case "666" -> {
+                // menu
+                buttons.sendText(chatId, messageId);
+                question = "Модератор - Рассылка - Текст";
+            }
+            case "777" -> {
+                // menu
+                buttons.sendPic(chatId, messageId);
+                question = "Модератор - Рассылка - Картинка";
+            }
+            case "888" -> {
+                // menu
+                buttons.sendPicText(chatId, messageId);
+                question = "Модератор - Рассылка - Картинка+текст";
+            }
+
         }
 
+        System.out.print(logging.createLogButton(chatId,question));
         logging.saveLogButton(chatId,question);
+
     }
 
     private void replyPlenary (String userId, int messageId) {
@@ -278,14 +412,28 @@ public class Action {
                     "21", "22", "23", "24", "25", "26"
 
          */
+        String str = "";
 
         switch (btnId) {
-            case "11" -> {
-                return "11";
-            }
-        }
+            case "11" -> {str = "Владимир Алтухов (АйТи БАСТИОН)";}
+            case "12" -> {str = "Иван Дятлов (КОНФИДЕНТ)";}
+            case "13" -> {str = "Лебедев Дмитрий (Код Безопасности)";}
+            case "14" -> {str = "Татьяна Мороз (User Gate)";}
+            case "15" -> {str = "Алексей Киселев (IDECO)";}
+            case "16" -> {str = "Михаил Самсонов (Positive Technologies)";}
+            case "17" -> {str = "Евгений Кривоносов (СДИ Софт)";}
+            case "18" -> {str = "Вячеслав Кадомский (НТЦ ИТ РОСА)";}
 
-        return "Name";
+            case "19" -> {str = "Сергей Пахомов (СИСТЭМ ЭЛЕКТРИК)";}
+            case "20" -> {str = "Илья Валов (UDV Group)";}
+            case "21" -> {str = "Чулпан Садыкова (Pantum)";}
+            case "22" -> {str = "Андрей Антипов (Р7-Офис)";}
+            case "23" -> {str = "Владимир Богачев (РЕДСОФТ)";}
+            case "24" -> {str = "Максим Субачев (HIDEN)";}
+            case "25" -> {str = "Дмитрий Аникин (YADRO)";}
+            case "26" -> {str = "Виталий Никитин (Аквариус)";}
+        }
+        return str;
     }
 
 //

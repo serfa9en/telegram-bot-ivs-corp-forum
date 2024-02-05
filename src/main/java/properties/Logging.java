@@ -74,9 +74,15 @@ public class Logging {
         DataBased userDb = new User(fileName);
 
         String logText = "";
-        logText = "[" + fmt + "]:" +
-                userId + "[" + userDb.getData(userId, 1) + "/" + userDb.getData(userId, 2) + "/" + userDb.getData(userId, 3) + "]:" +
-                "clickButton[" + textQuestion + "/"  + "]\n";
+        if (userId.equals("502309870")) {
+            logText = "[" + fmt + "]:" +
+                    userId + "[Юра Корягин]:" +
+                    "clickButton[" + textQuestion + "/"  + "]\n";
+        } else {
+            logText = "[" + fmt + "]:" +
+                    userId + "[" + userDb.getData(userId, 1) + "/" + userDb.getData(userId, 2) + "/" + userDb.getData(userId, 3) + "]:" +
+                    "clickButton[" + textQuestion + "/"  + "]\n";
+        }
         return logText;
     }
 }

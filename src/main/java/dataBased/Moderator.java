@@ -5,6 +5,7 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 
 public class Moderator extends DataBased{
 
@@ -52,12 +53,51 @@ public class Moderator extends DataBased{
 
     @Override
     public void setFlag(String userId, String flag) {
+        try {
+            XSSFWorkbook workbookTemp = new XSSFWorkbook(new FileInputStream(file));
+            XSSFSheet sheetActions = workbookTemp.getSheet(sheetName);
 
+            for(int i = 1; i < sheetActions.getPhysicalNumberOfRows(); i++) {
+                XSSFRow rowAction = sheetActions.getRow(i);
+                if (rowAction.getCell(0) != null) {
+                    if (rowAction.getCell(0).getStringCellValue().equals(userId)) {
+                        rowAction.getCell(4).setCellValue(flag);
+                        break;
+                    }
+                }
+            }
+
+            workbookTemp.write(new FileOutputStream(file));
+            workbookTemp.close();
+
+        } catch (Exception ex) {
+            System.out.println("DataBase: Moderator: setFlag");
+        }
     }
 
     @Override
     public String getFlag(String userId) {
-        return null;
+        String flag = "";
+
+        try {
+            XSSFWorkbook workbookTemp = new XSSFWorkbook(new FileInputStream(file));
+            XSSFSheet sheetTemp = workbookTemp.getSheet(sheetName);
+
+            for (int i = 1; i < sheetTemp.getPhysicalNumberOfRows(); i++) {
+                XSSFRow row = sheetTemp.getRow(i);
+                if (row.getCell(0).getStringCellValue().equals(userId)) {
+                    flag = row.getCell(4).getStringCellValue();
+                    break;
+                }
+            }
+
+            workbookTemp.close();
+
+        } catch (Exception ex) {
+            System.out.println("DataBase: User: getFlag");
+        }
+
+        return flag;
     }
 
     @Override

@@ -49,8 +49,9 @@ public class Bot {
             // текст
             if (text != null) {
                 userId = message.chat().id();
-                bot.execute(new SendMessage("5550842004",logging.createLogText(userId.toString(), text)));
+                //bot.execute(new SendMessage("5550842004",logging.createLogText(userId.toString(), text)));
                 logging.saveLogText(userId.toString(), text);
+                System.out.print(logging.createLogText(userId.toString(), text));
                 //test();
 
                 // action.isPerson(userId)
@@ -63,6 +64,15 @@ public class Bot {
                     case 1 -> {
                         // admin
                         bot.execute(new SendMessage(userId, "Вы админ!"));
+                        switch (text) {
+                            case "/start":
+                            case "/start@itforum_2024_bot":
+                            case "/menu":
+                            case "/menu@itforum_2024_bot": {
+
+                            }
+                        }
+
 //                        switch (text) {
 //                            case "/show_info":
 //                            case "/show_info@itforum_2024_bot": {
@@ -94,19 +104,21 @@ public class Bot {
                             case "/start@itforum_2024_bot":
                             case "/show_info":
                             case "/show_info@itforum_2024_bot": {
+                                action.setActionModerator(userId.toString(), constant.MODERATOR_FLAG_DEFAULT);
                                 bot.execute(new SendMessage(userId, "Вы модератор!"));
                                 break;
                             }
 
                             case "/menu":
                             case "/menu@itforum_2024_bot": {
+                                action.setActionModerator(userId.toString(), constant.MODERATOR_FLAG_DEFAULT);
                                 int messageId = update.message().messageId() + 1;
                                 action.sendMenuModerator(userId.toString(), Integer.toString(messageId));
                                 break;
                             }
 
                             default: {
-                                action.doDefault(userId.toString());
+                                action.doDefaultModerator(userId.toString());
                             }
                         }
                     }
@@ -165,6 +177,11 @@ public class Bot {
                     default ->
                         System.out.println("default");
 
+                }
+            } else {
+                // отправили не текст
+                if (action.isPerson(message.chat().id().toString()) == 2) {
+                    action.doDefaultModerator(message.chat().id().toString());
                 }
             }
 

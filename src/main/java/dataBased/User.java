@@ -139,7 +139,25 @@ public class User extends DataBased{
 
     @Override
     public String[] getDataArray(String data, int ind) {
-        return new String[0];
+        String[] array = new String[0];
+        try {
+            XSSFWorkbook workbookTemp = new XSSFWorkbook(new FileInputStream(file));
+            XSSFSheet sheetTemp = workbookTemp.getSheet(sheetName);
+
+            array = new String[sheetTemp.getPhysicalNumberOfRows() - 1];
+
+            for (int i = 1; i < sheetTemp.getPhysicalNumberOfRows(); i++) {
+                XSSFRow row = sheetTemp.getRow(i);
+                array[i-1] = row.getCell(0).getStringCellValue();
+            }
+
+            workbookTemp.close();
+
+        } catch (Exception ex) {
+            System.out.println("DataBase: User: checkUser");
+        }
+
+        return array;
     }
 
     @Override
